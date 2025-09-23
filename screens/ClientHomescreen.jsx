@@ -61,7 +61,7 @@ const ClientHomescreen = () => {
           
 
 
-          <View style={{ left: 30}} className=" bg-slate-200 px-4 py-1  rounded-xl w-[350px] h-[150px] border-1 relative shadow ">
+          <View style={{ left: 25}} className=" bg-slate-200 px-4 py-1  rounded-xl w-[350px] h-[150px] border-1 relative shadow ">
      
             <Image source={{ uri: post.User.profilePic }} resizeMode="cover" className="w-12 h-12 relative top-2" style={{ alignSelf:'flex-end' }} />
             <Text className="text-black text-2xl p-2 capitalize font-extralight absolute top-10">{post.JobDetails}</Text>
@@ -117,9 +117,16 @@ const ClientHomescreen = () => {
           ) : (
             <View>
               {Postings.length > 0 ? (
-                Postings.map((post, i) => (
-                  <PostingCard key={i} post={post} />
-                ))
+               Postings
+  .filter((post) => {
+    const userEmailDomain = user?.email?.split('@')[1];
+    const postEmailDomain = post?.User?.email?.split('@')[1];
+    return userEmailDomain && postEmailDomain && userEmailDomain === postEmailDomain;
+  })
+  .map((post, i) => (
+    <PostingCard key={i} post={post} />
+  ))
+
               ) : (
                 <View className=" flex flex-column justify-center align-middle items-center">
                 <Text>No jobs available</Text>

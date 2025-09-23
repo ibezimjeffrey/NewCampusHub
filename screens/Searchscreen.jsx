@@ -49,7 +49,7 @@ const Searchscreen = () => {
       <View>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
   <View style={{ flex: 1 }}>
-    <View className="w-[325px] top-4 left-4" style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 8, padding: 10 }}>
+    <View className="w-[310px] top-4 left-4" style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 8, padding: 10 }}>
       <Entypo name='magnifying-glass' size={24} style={{ marginRight: 10 }} />
       <TextInput
         style={{ flex: 1 }}
@@ -67,7 +67,7 @@ const Searchscreen = () => {
     </View>
   </View>
   <View className=" right-3 top-3">
-  <TouchableOpacity onPress={clearSearch}>
+  <TouchableOpacity className='bg' onPress={clearSearch}>
     <Text className="text-xl" style={{ color: '#268290' }}>Clear</Text>
   </TouchableOpacity>
 

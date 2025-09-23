@@ -398,7 +398,7 @@ const Profilescreen = () => {
     return (
       <View className="rounded-xl right-2 w-[350px] flex py-2">
         <TouchableOpacity onPress={() => navigation.navigate("DetailsScreen", { post })}>
-          <BlurView style={{ left: 30 }} className=" bg-slate-300 px-4 py-1 rounded-xl w-[350px] h-[150px] border-1 relative shadow " tint='extraLight' intensity={40} >
+          <BlurView style={{ left: 20 }} className=" bg-slate-300 px-4 py-1 rounded-xl w-[350px] h-[150px] border-1 relative shadow " tint='extraLight' intensity={40} >
             <Image source={{ uri: post.User.profilePic }} resizeMode="cover" className="w-12 h-12 relative top-2" style={{ alignSelf: 'flex-end' }} />
             <Text className="text-black text-2xl p-2 capitalize font-extralight absolute top-10">{post.JobDetails}</Text>
             <Text style={{ top: 20 }} className="text-gray-500 p-2 capitalize text-xl absolute">

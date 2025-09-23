@@ -173,6 +173,7 @@ const Settings = () => {
               {
   start ? (
     <Paystack  
+    
       paystackKey="pk_test_bb056f19149cb6867f38cb9019f7f94defd87bc0"  
       amount={number} 
       billingEmail={user.email} 

@@ -49,33 +49,31 @@ const Tab = createBottomTabNavigator();
 const Homescreen = () => {
   return (
   
-      <Tab.Navigator 
-        screenOptions={({ route } ) => ({
-          headerShown: false,
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
+     <Tab.Navigator
+  screenOptions={({ route }) => ({
+    headerShown: false,
+    tabBarActiveTintColor: '#268290', 
+    tabBarInactiveTintColor: 'gray', 
+    tabBarIcon: ({ focused, color, size }) => {
+      let iconName;
 
-            if (route.name === 'Home') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Search') {
-              iconName = focused ? 'search' : 'search-outline';
-            } else if (route.name === 'Post') {
-              iconName = focused ? 'add-circle' : 'add-circle-outline';
-            } else if (route.name === 'Messages') {
-              iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
-            }
-            else if (route.name === 'Profile') {
-              iconName = focused ? 'person' : 'person';
-            }
+      if (route.name === 'Home') {
+        iconName = focused ? 'home' : 'home-outline';
+      } else if (route.name === 'Search') {
+        iconName = focused ? 'search' : 'search-outline';
+      } else if (route.name === 'Post') {
+        iconName = focused ? 'add-circle' : 'add-circle-outline';
+      } else if (route.name === 'Messages') {
+        iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
+      } else if (route.name === 'Profile') {
+        iconName = focused ? 'person' : 'person';
+      }
 
-      
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-        })}
-        tabBarOptions={{
-          activeTintColor: '#268290',
-          inactiveTintColor: 'gray',
-        }}>
+      return <Ionicons name={iconName} size={size} color={color} />;
+    },
+  })}
+>
+
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen name="Search" component={Search} />
         <Tab.Screen name="Post" component={Post} />
