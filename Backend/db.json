@@ -1,0 +1,109 @@
+{
+  "users": [
+    {
+      "id": "user_1",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "balance": 91000,
+      "pending": 9000,
+      "bankAccount": {
+        "accountNumber": "0123456789",
+        "bankCode": "058",
+        "name": "John Doe"
+      }
+    }
+  ],
+  "recipients": [],
+  "transactions": [
+    {
+      "id": "b00fb0ef-1968-4dc3-924f-bc05a4e18837",
+      "userId": "user_1",
+      "amount": 1000,
+      "status": "pending",
+      "created_at": "2025-09-23T11:33:15.078Z",
+      "recipient_code": null,
+      "transfer_code": null,
+      "reference": null
+    },
+    {
+      "id": "5c8875f6-d0d9-4147-b700-4acdd1dac5ea",
+      "userId": "user_1",
+      "amount": 1000,
+      "status": "pending",
+      "created_at": "2025-09-23T11:34:53.611Z",
+      "recipient_code": null,
+      "transfer_code": null,
+      "reference": null
+    },
+    {
+      "id": "3905a238-155f-484d-a0e4-7893d3d38e56",
+      "userId": "user_1",
+      "amount": 1000,
+      "status": "pending",
+      "created_at": "2025-09-23T11:36:37.247Z",
+      "recipient_code": null,
+      "transfer_code": null,
+      "reference": null
+    },
+    {
+      "id": "a761b3a9-e0a5-47ca-bbc7-ecc452431768",
+      "userId": "user_1",
+      "amount": 1000,
+      "status": "pending",
+      "created_at": "2025-09-23T11:37:52.882Z",
+      "recipient_code": null,
+      "transfer_code": null,
+      "reference": null
+    },
+    {
+      "id": "b36579ca-c2e5-49f2-9b72-36b5dc6b591a",
+      "userId": "user_1",
+      "amount": 1000,
+      "status": "pending",
+      "created_at": "2025-09-23T11:39:34.211Z",
+      "recipient_code": null,
+      "transfer_code": null,
+      "reference": null
+    },
+    {
+      "id": "9280a64d-09c2-486d-8003-1bc94d936a5c",
+      "userId": "user_1",
+      "amount": 1000,
+      "status": "pending",
+      "created_at": "2025-09-23T11:40:03.669Z",
+      "recipient_code": null,
+      "transfer_code": null,
+      "reference": null
+    },
+    {
+      "id": "4b1959bc-f1f2-4e02-923c-2f88c28421a4",
+      "userId": "user_1",
+      "amount": 1000,
+      "status": "pending",
+      "created_at": "2025-09-23T11:41:12.916Z",
+      "recipient_code": null,
+      "transfer_code": null,
+      "reference": null
+    },
+    {
+      "id": "493c6486-46f3-4e78-84ad-9970283a48ba",
+      "userId": "user_1",
+      "amount": 1000,
+      "status": "pending",
+      "created_at": "2025-09-23T11:42:03.755Z",
+      "recipient_code": null,
+      "transfer_code": null,
+      "reference": null
+    },
+    {
+      "id": "05fb49ad-5335-405c-b68a-a9d604edc54a",
+      "userId": "user_1",
+      "amount": 1000,
+      "status": "pending",
+      "created_at": "2025-09-23T11:46:13.022Z",
+      "recipient_code": null,
+      "transfer_code": null,
+      "reference": null
+    }
+  ]
+}
