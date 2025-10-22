@@ -111,7 +111,7 @@ const Settings = () => {
     try {
       const res = await axios.post(
         // while testing on Expo Go, use your laptop IP + port
-        'http://172.18.20.51:3000/withdraw', // <--- replace with your LAN IP or live URL
+        'http://172.18.20.144:3000/withdraw', // <--- replace with your LAN IP or live URL
         {
           userId: user._id,
           amount: 980,  // amount in Naira
