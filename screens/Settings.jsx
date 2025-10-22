@@ -111,10 +111,10 @@ const Settings = () => {
     try {
       const res = await axios.post(
         // while testing on Expo Go, use your laptop IP + port
-        'http://172.18.20.144:3000/withdraw', // <--- replace with your LAN IP or live URL
+        'https://ruachbackend.onrender.com/withdraw', // <--- replace with your LAN IP or live URL
         {
           userId: user._id,
-          amount: 980,  // amount in Naira
+          amount: 980*100,  // amount in Naira
           accountNumber: '1896201614', // test account number
           bankCode: '044',             // test bank code
           name: user.fullName

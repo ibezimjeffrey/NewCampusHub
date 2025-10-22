@@ -1,6 +1,6 @@
 // server.js
 const admin = require('firebase-admin');
-const serviceAccount = require('./Priv_key.json');
+const serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 require('dotenv').config();
 
 const express = require('express');
