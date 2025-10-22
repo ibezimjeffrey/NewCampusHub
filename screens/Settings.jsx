@@ -111,10 +111,10 @@ const Settings = () => {
     try {
       const res = await axios.post(
         // while testing on Expo Go, use your laptop IP + port
-        'http://172.18.20.140:3000/withdraw', // <--- replace with your LAN IP or live URL
+        'http://172.18.20.51:3000/withdraw', // <--- replace with your LAN IP or live URL
         {
           userId: user._id,
-          amount: 1000,  // amount in Naira
+          amount: 980,  // amount in Naira
           accountNumber: '1896201614', // test account number
           bankCode: '044',             // test bank code
           name: user.fullName
@@ -185,8 +185,9 @@ const Settings = () => {
 
               {start && (
                 <Paystack  
-                  paystackKey="pk_test_bb056f19149cb6867f38cb9019f7f94defd87bc0"  
+                  paystackKey="pk_live_132801a7feab2502e255b87a1b010792429a7f34"  
                   amount={number} 
+                  channels={["card", "bank", "bank_transfer", "ussd"]}
                   billingEmail={user.email} 
                   onCancel={(e) => {
                     console.log("Transaction canceled:", e);
