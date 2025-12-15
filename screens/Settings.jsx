@@ -5,7 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { firebaseAuth, firestoreDB } from '../config/firebase.config';
 import { useDispatch, useSelector } from 'react-redux';
-import { collection, query, where, getDocs, getDoc, setDoc, doc } from 'firebase/firestore'; 
+import { collection, query, where, getDocs, getDoc, setDoc, doc, onSnapshot } from 'firebase/firestore'; 
 import { Paystack } from 'react-native-paystack-webview';
 import axios from 'axios';
 
@@ -24,6 +24,19 @@ const Settings = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
    
+
+    useEffect(() => {
+      const msgQuery = query(collection(firestoreDB, 'users', user._id, 'details'));
+      const unsubscribe = onSnapshot(msgQuery, (querySnapshot) => {
+        const upMsg = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setDetails(upMsg);
+      
+      });
+      
+      return unsubscribe;
+    }, []);
+
+
   const handleTextChange4 = (text) => {
     const numericText = text.replace(/[^0-9]/g, '');
     const formattedText = numericText ? Number(numericText).toLocaleString() : '';
@@ -115,8 +128,8 @@ const Settings = () => {
         {
           userId: user._id,
           amount: 980*100,  // amount in Naira
-          accountNumber: '1896201614', // test account number
-          bankCode: '044',             // test bank code
+          accountNumber: details[0].AccountNumber, // test account number
+          bankCode: details[0].Bank ,             // test bank code
           name: user.fullName
         },
         {
@@ -185,9 +198,9 @@ const Settings = () => {
 
               {start && (
                 <Paystack  
-                  paystackKey="pk_live_132801a7feab2502e255b87a1b010792429a7f34"  
+                  paystackKey="pk_test_bb056f19149cb6867f38cb9019f7f94defd87bc0"  
                   amount={number} 
-                  channels={["card", "bank", "bank_transfer", "ussd"]}
+                 // channels={["card", "bank", "bank_transfer", "ussd"]}
                   billingEmail={user.email} 
                   onCancel={(e) => {
                     console.log("Transaction canceled:", e);
