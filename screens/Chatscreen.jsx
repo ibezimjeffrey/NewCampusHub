@@ -10,7 +10,9 @@ import LoadingOverlay from './LoadingOverlay';
 import * as ImagePicker from 'expo-image-picker';
 
 const Chatscreen = ({ route }) => {
+  const [IsPaid, setIsPaid] = useState(false)
   const { post } = route.params;
+  const [Paid, setPaid] = useState(false)
   const navigation = useNavigation();
   const user = useSelector((state) => state.user.user);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,6 +57,27 @@ const Chatscreen = ({ route }) => {
 
     checkHiredStatus();
   }, [post.idRoom]);
+
+
+
+
+   useEffect(() => {
+    const checkPaidStatus = async () => {
+      try {
+        const statusSnapshot = await getDocs(query(collection(firestoreDB, 'Payments'), where('post._id', '==', post._id)));
+        setIsPaid(!statusSnapshot.empty);
+        setIsLoading1(false)
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error checking paid status:', error);
+      }
+    };
+
+    checkPaidStatus();
+  }, [post.idRoom]);
+
+
+
 
 
   useEffect(() => {
@@ -244,6 +267,40 @@ const Chatscreen = ({ route }) => {
       setIsHired(true);
       setIsApplying(false)
       
+      Alert.alert("Contract has started!")
+    } catch (error) {
+      console.error('Error hiring:', error);
+    }
+  };
+
+
+
+
+
+
+
+
+const PAY = async () => {
+    try {
+
+      setIsApplying(true)
+      const id = `${post.user._id}-${Date.now()}`;
+      const room_id = `${user._id}-${Date.now()}-${new Date().getSeconds()}`;
+      const PaymentStatus = {
+        _id: id,
+        user: user,
+        receipient: post.user,
+        status: true,
+        idRoom: room_id,
+        post: post,
+        price: post.price,
+      };
+      await addDoc(collection(firestoreDB, 'Payments'), PaymentStatus);
+      setIsHired(false)
+      setIsPaid(true);
+      setIsApplying(false)
+
+
       const newBalance = Balance - Price
       const balanceDocRef = doc(firestoreDB, 'Balance', user._id);
       await setDoc(balanceDocRef, { Amount: newBalance }); // Store the new balance in Firestore
@@ -252,11 +309,18 @@ const Chatscreen = ({ route }) => {
       const balanceDocRef1 = doc(firestoreDB, 'Balance', post.user._id);
       await setDoc(balanceDocRef1, { Amount: charge }); // Store the new balance in Firestore
 
-      Alert.alert("Contract has started!")
+      Alert.alert("Payment successful!")
+      
+    
+      
     } catch (error) {
-      console.error('Error hiring:', error);
+      console.error('Payment error:', error);
     }
   };
+
+
+
+
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -314,29 +378,55 @@ const Chatscreen = ({ route }) => {
       ) : (
         user._id !== post.index1 && (
           <>
-            {isHired ? (
-              <TouchableOpacity disabled={true} onPress={() => { }}>
-                <View style={{ left: 20 }} className="relative">
-                  <View style={{ backgroundColor: "#b8ccee" }} className="border-1 left-7 mr-8 border-emerald-950 rounded-lg p-4">
-                    <Text className="font-bold text-zinc-950">HIRED</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ) : (
-              
-              <TouchableOpacity disabled={isApplying} onPress={Employ}>
-                <View style={{ left: 20 }} className="relative">
-                  <View className="border-1 left-7 bg-red-400 border-emerald-950 mr-8 rounded-lg p-4">
-                    
-                    <Text className="font-bold text-zinc-950">HIRE</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            )}
+            {isHired && !IsPaid? (
+  <TouchableOpacity onPress={PAY}>
+    <View style={{ left: 20 }} className="relative">
+      <View style={{ backgroundColor: "#88E788" }} className="border-1 left-7 mr-8 border-emerald-950 rounded-lg p-4">
+        <Text className="font-bold text-zinc-950">PAY</Text>
+      </View>
+    </View>
+  </TouchableOpacity>
+) : (
+
+<>
+{!IsPaid ? (
+  <TouchableOpacity disabled={isApplying} onPress={Employ}>
+    <View style={{ left: 20 }} className="relative">
+      <View className="border-1 left-7 bg-red-400 border-emerald-950 mr-8 rounded-lg p-4">
+        <Text className="font-bold text-zinc-950">HIRE</Text>
+      </View>
+    </View>
+  </TouchableOpacity>
+) : (
+ "")}
+
+</>
+
+ 
+
+
+)}
+
           </>
+
+
+
         )
       )}
+<>
 
+{IsPaid ? (
+  <TouchableOpacity disabled>
+    <View style={{ left: 20 }} className="relative">
+      <View className="border-1 left-7 bg-yellow-400 border-emerald-950 mr-8 rounded-lg p-4">
+        <Text className="font-bold text-zinc-950">PAID</Text>
+      </View>
+    </View>
+  </TouchableOpacity>
+) 
+: ('')}
+
+</>
       
         {isApplying ? (
         <LoadingOverlay visible={true} />

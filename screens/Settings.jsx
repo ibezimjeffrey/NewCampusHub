@@ -15,11 +15,12 @@ const Settings = () => {
   const user = useSelector((state) => state.user.user);
   const [details, setDetails] = useState('');
   const [start, setstart] = useState(false);
-  const [value4, setvalue4] = useState(""); 
+  const [value4, setvalue4] = useState(''); 
   const [Balance, setBalance] = useState(0);
   const [Payed, setPayed] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [add, setadd] = useState(false);
+  const [withdraw, setwithdraw] = useState(false);
   const [number, setnumber] = useState(""); 
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -54,9 +55,15 @@ const Settings = () => {
     setadd(true);
   };
 
+   const Begin2 = () => {
+    setwithdraw(true);
+  };
+
   const Begin1 = async () => {  
     setstart(true)
   };
+
+  
 
   useEffect(() => {
     const getUserBalance = async () => {
@@ -120,6 +127,7 @@ const Settings = () => {
 
   // call your backend to withdraw:
   const withdrawFunds = async () => {
+    
 
     try {
       const res = await axios.post(
@@ -127,7 +135,7 @@ const Settings = () => {
         'https://ruachbackend.onrender.com/withdraw', // <--- replace with your LAN IP or live URL
         {
           userId: user._id,
-          amount: 980*100,  // amount in Naira
+          amount: number*100,  // amount in Naira
           accountNumber: details[0].AccountNumber, // test account number
           bankCode: details[0].Bank ,             // test bank code
           name: user.fullName
@@ -189,7 +197,7 @@ const Settings = () => {
                   <Text className="left-4 top-1 font-extrlight">Add</Text>
                 </View>
                 <View>
-                  <TouchableOpacity onPress={withdrawFunds} className="left-2 w-11 h-11 border border-primaryButton rounded-full flex items-center justify-center">
+                  <TouchableOpacity onPress={Begin2} className="left-2 w-11 h-11 border border-primaryButton rounded-full flex items-center justify-center">
                     <MaterialIcons name='arrow-downward' size={26} color={'#268290'} />
                   </TouchableOpacity>
                   <Text className="left-4 top-1 font-extrlight">Withdraw</Text>
@@ -244,6 +252,37 @@ const Settings = () => {
               </TouchableOpacity>
             </View>
           )}
+
+          {withdraw && (
+            <View style={{bottom: 119}} className="left-13 flex-row justify-between gap-x-4">
+              <View className="relative bottom-5">
+                <Text style={{ position: 'relative', left: 24, top: 55, color: 'black', fontSize: 16 }}>₦</Text>
+                <TextInput
+                  className="border border-gray-400 rounded-2xl w-[160px] px-4 py-9 flex-row items-center justify-between space-x-8 left-5"
+                  onChangeText={handleTextChange4}
+                  value={value4}
+                  keyboardType="numeric"
+                />
+              </View>
+              
+              <TouchableOpacity onPress={withdrawFunds}>
+                <View className="top-5 w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
+                  <MaterialIcons name='check' size={26} color={'#fff'} />
+                </View>
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={CancelEdit}>
+                <View className="top-5 w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
+                  <MaterialIcons name='clear' size={26} color={'#fff'} />
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
+
+
+
+
+
         </ScrollView>
       </SafeAreaView>
     </View>
