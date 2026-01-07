@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { firestoreDB } from '../config/firebase.config';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 
 const DetailsScreen = ({ route }) => {
   const { post } = route.params;
@@ -74,7 +75,13 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
       await setDoc(doc(firestoreDB, "chats", newid), _doc1);
       navigation.navigate("Homescreen", { post: post });
       setIsApplying(false);
-      alert(post.User.fullName + ' has been added to chats');
+
+      Toast.show({
+  type: ALERT_TYPE.SUCCESS,
+  title: 'Application Sent',
+  textBody:post.User.fullName + ' has been added to chats',
+});
+
     } catch (err) {
       alert("Error: " + err);
     }

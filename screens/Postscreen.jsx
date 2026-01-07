@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux'
 import { addDoc, collection, onSnapshot, query } from 'firebase/firestore'
 import { firestoreDB } from '../config/firebase.config'
 import { Picker } from '@react-native-picker/picker';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 
 const Postscreen = () => {
   const [isApplying, setIsApplying] = useState(false); 
@@ -137,7 +138,11 @@ const Postscreen = () => {
         setvalue4("");
         addDoc(collection(firestoreDB, "AllPostings"), _doc)
 
-        alert("Job successfully posted");
+         Toast.show({
+  type: ALERT_TYPE.SUCCESS,
+  title: 'Job successfully posted',
+  textBody:'Your post has been added to the home feed',
+});
         navigation.navigate("Home");
       })
       .catch(err => alert(err));

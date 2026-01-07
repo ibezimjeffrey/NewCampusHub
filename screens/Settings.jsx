@@ -8,8 +8,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { collection, query, where, getDocs, getDoc, setDoc, doc, onSnapshot } from 'firebase/firestore'; 
 import { Paystack } from 'react-native-paystack-webview';
 import axios from 'axios';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
+
 
 import { SET_USERMediaTypeOptions } from '../context/actions/userActions';
+import LoadingOverlay from './LoadingOverlay';
 
 const Settings = () => {
   const user = useSelector((state) => state.user.user);
@@ -24,7 +27,7 @@ const Settings = () => {
   const [number, setnumber] = useState(""); 
   const navigation = useNavigation();
   const dispatch = useDispatch();
-   
+  const [IsWithdrawing, setIsWithdrawing] = useState(false)
 
     useEffect(() => {
       const msgQuery = query(collection(firestoreDB, 'users', user._id, 'details'));
@@ -50,14 +53,24 @@ const Settings = () => {
     setadd(false);
     setnumber("");
   };
+ const CancelEdit1 = () => {
+    setwithdraw(false);
+    setnumber("");
+  };
 
   const Begin = () => {
-    setadd(true);
-  };
+  setwithdraw(false);   // 🔴 REMOVE withdraw UI
+  setadd(true);         // 🟢 SHOW add UI
+  setvalue4('');
+  setnumber('');
+};
 
-   const Begin2 = () => {
-    setwithdraw(true);
-  };
+const Begin2 = () => {
+  setadd(false);        // 🔴 REMOVE add UI
+  setwithdraw(true);    // 🟢 SHOW withdraw UI
+  setvalue4('');
+  setnumber('');
+};
 
   const Begin1 = async () => {  
     setstart(true)
@@ -127,10 +140,25 @@ const Settings = () => {
 
   // call your backend to withdraw:
   const withdrawFunds = async () => {
-    
+ 
 
     try {
+         if (number > Balance) {
+Toast.show({
+  type: ALERT_TYPE.WARNING,
+  title: 'Insufficient Balance',
+  textBody: 'You do not have enough funds',
+});
+
+
+  return;
+}
+
+
+setIsWithdrawing(true)
+
       const res = await axios.post(
+        
         // while testing on Expo Go, use your laptop IP + port
         'https://ruachbackend.onrender.com/withdraw', // <--- replace with your LAN IP or live URL
         {
@@ -147,6 +175,16 @@ const Settings = () => {
         }
       );
       console.log('Withdraw response:', res.data);
+    Toast.show({
+  type: ALERT_TYPE.SUCCESS,
+  title: 'Withdrawal Sent 💸',
+  textBody: 'Your funds will arrive in your bank within 3–4 hours..',
+});
+
+      setnumber("");
+      setwithdraw(false);
+      setIsWithdrawing(false)
+
 
     } catch (err) {
       console.error('Withdraw error:', err);
@@ -189,20 +227,42 @@ const Settings = () => {
             </View>
 
             <View className="justify-center items-center">
-              <View className="border-primaryButton border rounded-xl mt-2" style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingVertical: 10, backgroundColor: "#FFFFFF", paddingHorizontal: 90 }}>
-                <View>
-                  <TouchableOpacity onPress={Begin} className="left-2 w-11 h-11 border border-primaryButton rounded-full flex items-center justify-center">
-                    <MaterialIcons name='add' size={26} color={'#268290'} />
-                  </TouchableOpacity>
-                  <Text className="left-4 top-1 font-extrlight">Add</Text>
-                </View>
-                <View>
-                  <TouchableOpacity onPress={Begin2} className="left-2 w-11 h-11 border border-primaryButton rounded-full flex items-center justify-center">
-                    <MaterialIcons name='arrow-downward' size={26} color={'#268290'} />
-                  </TouchableOpacity>
-                  <Text className="left-4 top-1 font-extrlight">Withdraw</Text>
-                </View>
-              </View>
+  <View
+    className="border-primaryButton border rounded-xl mt-2"
+    style={{
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-around", // changed from space-between
+      paddingVertical: 10,
+      backgroundColor: "#FFFFFF",
+      paddingHorizontal: 30, // reduced to avoid too much side padding
+      width: "80%", // optional: control container width
+    }}
+  >
+    {/* Add Button */}
+    <View className="items-center">
+      <TouchableOpacity
+        onPress={Begin}
+        className="w-12 h-12 border border-primaryButton rounded-full flex items-center justify-center"
+      >
+        <MaterialIcons name="add" size={26} color="#268290" />
+      </TouchableOpacity>
+      <Text className="mt-1 font-extralight">Add</Text>
+    </View>
+
+    {/* Withdraw Button */}
+    <View className="items-center">
+      <TouchableOpacity
+        onPress={Begin2}
+        className="w-12 h-12 border border-primaryButton rounded-full flex items-center justify-center"
+      >
+        <MaterialIcons name="arrow-downward" size={26} color="#268290" />
+      </TouchableOpacity>
+      <Text className="mt-1 font-extralight">Withdraw</Text>
+    </View>
+  </View>
+</View>
+            <View className="items-center mt-6">  
 
               {start && (
                 <Paystack  
@@ -216,6 +276,11 @@ const Settings = () => {
                   }}
                   onSuccess={async (res) => {
                     console.log("Transaction successful:", res);
+                    Toast.show({
+  type: ALERT_TYPE.SUCCESS,
+  title: 'Your wallet has been credited 💸',
+});
+
                     setstart(false);
                     setadd(false);
                     setnumber("");
@@ -227,6 +292,13 @@ const Settings = () => {
             </View>
           </View>
 
+          {IsWithdrawing ? (
+        <LoadingOverlay visible={true} />
+        
+        ) : (
+          ""
+        )}
+
           {add && (
             <View style={{bottom: 119}} className="left-13 flex-row justify-between gap-x-4">
               <View className="relative bottom-5">
@@ -235,6 +307,7 @@ const Settings = () => {
                   className="border border-gray-400 rounded-2xl w-[160px] px-4 py-9 flex-row items-center justify-between space-x-8 left-5"
                   onChangeText={handleTextChange4}
                   value={value4}
+                  placeholder='Add amount'
                   keyboardType="numeric"
                 />
               </View>
@@ -261,6 +334,7 @@ const Settings = () => {
                   className="border border-gray-400 rounded-2xl w-[160px] px-4 py-9 flex-row items-center justify-between space-x-8 left-5"
                   onChangeText={handleTextChange4}
                   value={value4}
+                  placeholder='Withdraw Amount'
                   keyboardType="numeric"
                 />
               </View>
@@ -271,7 +345,7 @@ const Settings = () => {
                 </View>
               </TouchableOpacity>
               
-              <TouchableOpacity onPress={CancelEdit}>
+              <TouchableOpacity onPress={CancelEdit1}>
                 <View className="top-5 w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
                   <MaterialIcons name='clear' size={26} color={'#fff'} />
                 </View>

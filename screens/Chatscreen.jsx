@@ -8,6 +8,7 @@ import { firestoreDB } from '../config/firebase.config';
 import { BlurView } from 'expo-blur';
 import LoadingOverlay from './LoadingOverlay';
 import * as ImagePicker from 'expo-image-picker';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 
 const Chatscreen = ({ route }) => {
   const [IsPaid, setIsPaid] = useState(false)
@@ -267,7 +268,12 @@ const Chatscreen = ({ route }) => {
       setIsHired(true);
       setIsApplying(false)
       
-      Alert.alert("Contract has started!")
+        Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        title: post.user.fullName  + ' has been successfully hired',
+       
+      });
+      
     } catch (error) {
       console.error('Error hiring:', error);
     }
@@ -309,7 +315,12 @@ const PAY = async () => {
       const balanceDocRef1 = doc(firestoreDB, 'Balance', post.user._id);
       await setDoc(balanceDocRef1, { Amount: charge }); // Store the new balance in Firestore
 
-      Alert.alert("Payment successful!")
+     
+        Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        title: 'Payment successful',
+        textBody: 'Freelancer has been paid successfully',
+      });
       
     
       
@@ -381,7 +392,7 @@ const PAY = async () => {
             {isHired && !IsPaid? (
   <TouchableOpacity onPress={PAY}>
     <View style={{ left: 20 }} className="relative">
-      <View style={{ backgroundColor: "#88E788" }} className="border-1 left-7 mr-8 border-emerald-950 rounded-lg p-4">
+      <View className="border-1 left-7 mr-8 bg-yellow-400 border-emerald-950 rounded-lg p-4">
         <Text className="font-bold text-zinc-950">PAY</Text>
       </View>
     </View>
@@ -418,7 +429,7 @@ const PAY = async () => {
 {IsPaid ? (
   <TouchableOpacity disabled>
     <View style={{ left: 20 }} className="relative">
-      <View className="border-1 left-7 bg-yellow-400 border-emerald-950 mr-8 rounded-lg p-4">
+      <View style={{ backgroundColor: "#88E788" }} className="border-1 left-7  border-emerald-950 mr-8 rounded-lg p-4">
         <Text className="font-bold text-zinc-950">PAID</Text>
       </View>
     </View>
@@ -438,8 +449,8 @@ const PAY = async () => {
 
       {
         user._id == post.index1 && FreelanceHired ?
-        <View style={{ left: 20 }} className="relative">
-                  <View style={{ backgroundColor: "#b8ccee" }} className="border-1 left-7 mr-8 border-emerald-950 rounded-lg p-4">
+        <View style={{ left: 20 }} className="relative">  
+                  <View style={{ backgroundColor: "#facc15" }} className="border-1 left-7 mr-8 border-emerald-950 rounded-lg p-4">
                     <Text className="font-bold text-zinc-950">HIRED</Text>
                   </View>
                 </View>

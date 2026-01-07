@@ -13,11 +13,16 @@ import { Signupscreen } from './screens';
 import Store from './context/store';
 import {Profilescreen} from './screens';
 import { LogBox } from 'react-native';
+import { AlertNotificationRoot } from 'react-native-alert-notification';
 
 
 export default function App() {
   LogBox.ignoreAllLogs()
   return (
+
+    <AlertNotificationRoot>
+
+   
 <NavigationContainer>
   <Provider store={Store}>
 
@@ -47,7 +52,7 @@ export default function App() {
   
   </Provider>
   </NavigationContainer> 
-    
+        </AlertNotificationRoot>
   );
 }
 
