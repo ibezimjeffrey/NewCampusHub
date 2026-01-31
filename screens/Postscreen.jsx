@@ -1,7 +1,8 @@
 import { View, Text, Platform, TextInput, ActivityIndicator } from 'react-native'
+import CustomPicker from '@/components/CustomPicker'
 import React, { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native'
-import { SafeAreaView } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { KeyboardAvoidingView } from 'react-native'
 import { ScrollView } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
@@ -10,6 +11,18 @@ import { addDoc, collection, onSnapshot, query } from 'firebase/firestore'
 import { firestoreDB } from '../config/firebase.config'
 import { Picker } from '@react-native-picker/picker';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
+import FancyTextInput from '@/components/FancyTextInput'
+import { Dimensions } from 'react-native';
+const { width } = Dimensions.get('window');
+import { serverTimestamp } from 'firebase/firestore';
+
+
+const scaleFont = (baseFont) => {
+  if (width <= 320) return baseFont * 0.8; // very small phones
+  if (width <= 375) return baseFont * 0.9; // small phones
+  return baseFont; // normal & large phones
+};
+
 
 const Postscreen = () => {
   const [isApplying, setIsApplying] = useState(false); 
@@ -29,9 +42,55 @@ const Postscreen = () => {
   const navigation = useNavigation();
   const user = useSelector((state) => state.user.user)
   const currentDate = new Date();
-  const day = String(currentDate.getDate()).padStart(2, '0');
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const value3 = `${day}/${month}`;
+const year = currentDate.getFullYear();
+const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+const day = String(currentDate.getDate()).padStart(2, '0');
+const hours = String(currentDate.getHours()).padStart(2, '0');
+const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+const Time = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+const DisplayTime = `${day}-${month}-${year}`;
+const jobOptions = [
+  { label: "Select job", value: "" },
+  { label: "Makeup Artist", value: "Makeup Artist" },
+  { label: "Catering services", value: "Catering services" },
+  { label: "Cleaning services", value: "Cleaning services" },
+  { label: "Personal Shopper", value: "Personal Shopper" },
+  { label: "Tutoring", value: "Tutoring" },
+  { label: "Nail Tech", value: "Nail Tech" },
+  { label: "Writer", value: "Writer" },
+  { label: "Hairstylist", value: "Hairstylist" },
+  { label: "Delivery", value: "Delivery" },
+  { label: "Graphic Designer", value: "Graphic Designer" },
+  { label: "Essay Editing", value: "Essay Editing" },
+  { label: "Fitness Training", value: "Fitness Training" },
+  { label: "Errand Running", value: "Errand Running" },
+  { label: "Photography", value: "Photography" },
+  { label: "Other", value: "Other" },
+];
+
+const locationOptions = [
+  { label: "Select Location", value: "" },
+  { label: "Remote", value: "Remote" },
+  { label: "Students' Center", value: "Students' Center" },
+  { label: "Pod", value: "Pod Hostel" },
+  { label: "Cooperative", value: "Cooperative" },
+  { label: "Amethyst", value: "Amethyst" },
+  { label: "Cedar", value: "Cedar" },
+  { label: "Trezadel", value: "Trezadel" },
+  { label: "Faith", value: "Faith" },
+  { label: "EDC", value: "EDC" },
+  { label: "Pearl", value: "Pearl" },
+  { label: "Trinity", value: "Trinity" },
+  { label: "Asther Hall", value: "Asther Hall" },
+  { label: "Cooperative Queens", value: "Cooperative Queens" },
+  { label: "Redwood", value: "Redwood" },
+  { label: "SST", value: "SST" },
+  { label: "TYD", value: "TYD" },
+];
+
+
   const [COSavailable, setCOSavailable] = useState(false)
   const [Aboutavailable, setAboutavailable] = useState(false)
 
@@ -86,27 +145,45 @@ const Postscreen = () => {
   const handlePost = async () => {
     setIsApplying(true);
 
-    if (!value.trim() || !value1.trim()|| !value2.trim()|| !value3.trim()|| !value4.trim() ) {
-      alert('Please fill in all details');
+    if (!value.trim() || !value1.trim()|| !value2.trim()|| !Time.trim()|| !value4.trim() ) {
+
+       Toast.show({
+                  type: ALERT_TYPE.WARNING,
+                  title: 'Incomplete Details',
+                  textBody:'Please fill in all details',
+                });
+
       setIsApplying(false);
       return;
     }
 
     if (COSavailable == false || Aboutavailable == false ) {
-      alert('Please finish setting up your profile');
+       Toast.show({
+                  type: ALERT_TYPE.WARNING,
+                  title: 'Profile Incomplete',
+                  textBody:'Please finish setting up your profile',
+                });
       setIsApplying(false);
       return;
     }
 
     const numericBudget = parseInt(value4.replace(/,/g, ''), 10);
-    if (numericBudget > 500000) {
-      alert('Budget has to be lower than N1,000,000');
+    if (numericBudget > 100000) {
+       Toast.show({
+                  type: ALERT_TYPE.WARNING,
+                  title: 'Budget Too High',
+                  textBody:'Budget has to be lower than N100,000',
+                });
       setIsApplying(false);
       return;
     }
 
     if (wordCount > 3) {
-      alert('Job Title too long');
+     Toast.show({
+                type: ALERT_TYPE.WARNING,
+                title: 'Job Title Too Long',
+                textBody:' Job title must be 3 words or less',
+              });
       setIsApplying(false);
       return;
     }
@@ -123,7 +200,9 @@ const Postscreen = () => {
       JobDetails: jobDetails,
       Description: value1,
       Location: value2,
-      Type: value3,
+      createdAt: serverTimestamp(),
+      Type: Time,
+      DisplayTime: DisplayTime,
       Budget: value4,
       User: user
     };
@@ -158,42 +237,21 @@ const Postscreen = () => {
               <Text style={{color:"#268290"}} className="text-xl">Create Post</Text>
             </View>
 
-            <Text className="left-5 text-xl">Job Title</Text>
-            <View className="left-6">
-              <Picker
-                className="left-5"
-                selectedValue={value}
-                onValueChange={(itemValue) => handleTextChange(itemValue)}
-                style={{ 
-                  borderWidth: 1,
-                  borderColor: value.length > 0 ? "#268290" : "gray",
-                  borderRadius: 20,
-                  paddingHorizontal: 18,
-                  paddingVertical: 1,
-                  width:360
-                }}
-              >
-                <Picker.Item label="Select job" value="" />
-                <Picker.Item label="Makeup Artist" value="Makeup Artist" />
-                <Picker.Item label="Catering services" value="Catering services" />
-                <Picker.Item label="Cleaning services" value="Cleaning services" />
-                <Picker.Item label="Personal Shopper" value="Personal Shopper" />
-                <Picker.Item label="Tutoring" value="Tutoring" />
-                <Picker.Item label="Nail Tech" value="Nail Tech" />
-                <Picker.Item label="Writer" value="Writer" />
-                <Picker.Item label="Hairstylist" value="Hairstylist" />
-                <Picker.Item label="Delivery" value="Delivery" />
-                <Picker.Item label="Graphic Designer" value="Graphic Designer" />
-                <Picker.Item label="Essay Editing" value="Essay Editing" />
-                <Picker.Item label="Fitness Training" value="Fitness Training" />
-                <Picker.Item label="Errand Running" value="Errand Running" />
-                <Picker.Item label="Photography" value="Photography" />
-                <Picker.Item label="Other" value="Other" />
-              </Picker>
+          <Text style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
+  Job Title
+</Text>
+
+            <View>
+       <CustomPicker
+    label="Select job"
+    value={value}
+    onSelect={(itemValue) => handleTextChange(itemValue)}
+    options={jobOptions}
+  />
             </View>
 
             {value === "Other" && (
-              <TextInput
+              <FancyTextInput
                 style={{borderColor: otherJob.length > 0 ? "#268290" : "gray"}}
                 className="border rounded-2xl w-[360px] px-4 py-9 flex-row items-center justify-between space-x-8 left-5 my-2"
                 placeholder="Add job"
@@ -202,9 +260,10 @@ const Postscreen = () => {
                 value={otherJob}
               />
             )}
-
-            <Text className="left-5 text-xl">Description</Text>
-            <TextInput
+        <Text style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
+  Description
+</Text>
+            <FancyTextInput
               style={{borderColor: value1.length > 0 ? "#268290" : "gray"}}
               className="border rounded-2xl w-[360px] px-4 py-9 flex-row items-center justify-between space-x-8 left-5 my-2"
               placeholder="Describe the job"
@@ -213,7 +272,30 @@ const Postscreen = () => {
               value={value1}
             />
 
-            <Text className="left-5 text-xl">Where would the job be taking place</Text>
+
+
+        <Text style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
+  Location
+</Text>
+            <View >
+             <View className="">
+ 
+   <CustomPicker
+    label="Select location"
+    value={value2}
+    onSelect={(itemValue) => handleTextChange2(itemValue)}
+    options={locationOptions}
+  />
+  
+            </View>
+             </View>
+
+             
+
+
+
+
+            {/* <Text className="left-5 text-xl">Where would the job be taking place</Text>
             <View className="left-4">
              <View className="">
   {user?.email?.endsWith("@pau.edu.ng") ? (
@@ -310,26 +392,52 @@ const Postscreen = () => {
   ) : null}
 </View>
 
-            </View>
+            </View> */}
 
-            <Text className="relative left-5 text-xl">Budget</Text>
-            <View className="relative bottom-5">
-              <Text style={{ position: 'relative', left: 24, top: 55, color: 'black', fontSize: 16 }}>₦</Text>
-              <TextInput
-                className="border border-gray-400 rounded-2xl w-[360px] px-4 py-9 flex-row items-center justify-between space-x-8 left-5"
-                onChangeText={handleTextChange4}
-                value={value4}
-                keyboardType="numeric"
-              />
-            </View>
+                    <Text style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
+  Budget
+</Text>
+           
+                           <FancyTextInput
+                             className="flex-1 text-3xl  text-black "
+                             keyboardType="numeric"
+                             placeholder="0"
+                             value={value4}
+                             onChangeText={handleTextChange4}
+                           />
+                        
+            
 
-            <TouchableOpacity disabled={isApplying} onPress={handlePost} className="w-[360px] left-5 px-4 rounded-xl bg-primaryButton my-3 flex items-center justify-center">
-              {isApplying ? (
-                <ActivityIndicator className="py-3" size="small" color="#ffffff" />
-              ) : (
-                <Text className='py-2 text-white text-xl font-semibold'>Post Job</Text>
-              )}
-            </TouchableOpacity>
+            <TouchableOpacity
+  disabled={isApplying}
+  onPress={handlePost}
+  style={{
+    width: Math.min(width - 40, 360), // responsive width, max 360
+    marginLeft: 20,                   // replaces left-5
+    paddingVertical: 12,              // vertical padding
+    borderRadius: 16,                 // rounded corners
+    backgroundColor: '#268290',       // replace with your primaryButton color
+    marginVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }}
+>
+  {isApplying ? (
+    <ActivityIndicator size="small" color="#ffffff" />
+  ) : (
+    <Text
+      style={{
+        color: '#fff',
+        fontSize: scaleFont(18),   // responsive font size
+        fontWeight: '600',
+        paddingVertical: 6,
+      }}
+    >
+      Post Job
+    </Text>
+  )}
+</TouchableOpacity>
+
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

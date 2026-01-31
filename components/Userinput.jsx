@@ -24,8 +24,8 @@ const Userinput = ({ Placeholder, isPass, setstateValue, setgetEmailValidationSt
     setstateValue(text); // Pass the new value to the parent component
 
     if (Placeholder === "Email") {
-     const emailRegex = /^([a-zA-Z]+\.?\d+@stu\.cu\.edu\.ng|[a-zA-Z0-9._%+-]+@pau\.edu\.ng|[a-zA-Z0-9._%+-]+@student\.babcock\.edu\.ng)$/;
-
+    //  const emailRegex = /^([a-zA-Z]+\.?\d+@stu\.cu\.edu\.ng|[a-zA-Z0-9._%+-]+@pau\.edu\.ng|[a-zA-Z0-9._%+-]+@student\.babcock\.edu\.ng)$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
       const status = emailRegex.test(text);
@@ -35,21 +35,56 @@ const Userinput = ({ Placeholder, isPass, setstateValue, setgetEmailValidationSt
   };
 
   return (
-    <View className={`border rounded-2xl px-4 py-9 flex-row items-center justify-between space-x-4 my-2 ${!isEmailValid && Placeholder === "Email" && value.length > 0 ? "border-red-500" : "border-gray-200"}`}>
-      <MaterialIcons name={icon} size={24} color={"#6c6c6c"} />
-      <TextInput
-        className="flex-1 text-primaryText font-semibold -mt-1"
-        placeholder={Placeholder}
-        value={value}
-        onChangeText={handleTextChange}
-        secureTextEntry={isPass && showPass}
+   <View style={{ position: 'relative', width: '100%' }}>
+  {/* Left icon */}
+  <MaterialIcons
+    name={icon}
+    size={22}
+    color="#6c6c6c"
+    style={{
+      position: 'absolute',
+      left: 14,
+      top: '50%',
+      transform: [{ translateY: -11 }],
+      zIndex: 1,
+    }}
+  />
+
+  <TextInput
+    className={`border h-[90] rounded-2xl text-primaryText font-semibold px-12 py-4 my-2
+      ${
+        !isEmailValid &&
+        Placeholder === 'Email' &&
+        value.length > 0
+          ? 'border-red-500'
+          : 'border-gray-200'
+      }`}
+    placeholder={Placeholder}
+    value={value}
+    onChangeText={handleTextChange}
+    secureTextEntry={isPass && showPass}
+  />
+
+  {/* Password toggle icon (right side) */}
+  {isPass && (
+    <TouchableOpacity
+      style={{
+        position: 'absolute',
+        right: 14,
+        top: '50%',
+        transform: [{ translateY: -11 }],
+      }}
+      onPress={() => setshowPass(!showPass)}
+    >
+      <Entypo
+        name={showPass ? 'eye' : 'eye-with-line'}
+        size={22}
+        color="#6c6c6c"
       />
-      {isPass && (
-        <TouchableOpacity onPress={() => setshowPass(!showPass)}>
-          <Entypo name={`${showPass ? 'eye' : 'eye-with-line'}`} size={24} color={"#6c6c6c"} />
-        </TouchableOpacity>
-      )}
-    </View>
+    </TouchableOpacity>
+  )}
+</View>
+
   );
 };
 

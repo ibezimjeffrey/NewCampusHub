@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, Image, Dimensions, TouchableOpacity, ScrollView, SafeAreaView, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, Image, Dimensions, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { BGImage, Logo } from '../assets';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Userinput from '../components/Userinput'; // Correct import statement
 import { useNavigation } from '@react-navigation/native';
 import { avatars } from '../utils/support';
@@ -10,6 +11,9 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { firebaseAuth, firestoreDB } from '../config/firebase.config';
 import { doc, setDoc } from 'firebase/firestore';
 import {sendEmailVerification} from 'firebase/auth';
+import { StyleSheet } from "react-native";
+import { FlatList } from "react-native";
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 
 
 const Signupscreen = () => {
@@ -44,19 +48,31 @@ const Signupscreen = () => {
     setIsApplying(true);
     if (!name.trim() || !email.trim()) {
       setIsApplying(false);
-      alert('Please fill in your details');
+           Toast.show({
+                        type: ALERT_TYPE.WARNING,
+                        title: 'Incomplete Details',
+                        textBody:'Please fill in all details',
+                      });
       return;
     }
 
     if (passwordStrength === "Weak") {
       setIsApplying(false);
-      alert('Enter a strong password');
+           Toast.show({
+                        type: ALERT_TYPE.WARNING,
+                        title: 'Weak Password',
+                        textBody:' Please choose a stronger password with at least 8 characters.',
+                      });
       return;
     }
 
     if (getEmailValidationStatus === false) {
       setIsApplying(false);
-      alert('Enter school email address');
+           Toast.show({
+                        type: ALERT_TYPE.WARNING,
+                        title: 'Invalid Email Address',
+                        textBody:' Please enter a valid email address.',
+                      });
       return;
     }
     
@@ -77,14 +93,24 @@ const Signupscreen = () => {
         navigation.replace("Aboutscreen");
       } catch (error) {
         setIsApplying(false);
-        alert("Email already in use");
+             Toast.show({
+                          type: ALERT_TYPE.WARNING,
+                          title: 'Email already in use',
+                          textBody:' Please use a different email address.',
+                        });
 
         if(error ==="Failed to get document because the client is offline.")
-          alert("Check Internet connection");
+               Toast.show({
+                            type: ALERT_TYPE.WARNING,
+                            title: 'No Internet Connection',
+                            textBody:' Please check your internet connection and try again.',
+                          });
 
       }
     }
   };
+const NUM_COLUMNS = 3;
+const ITEM_SIZE = screenwidth / NUM_COLUMNS - 24;
 
   const navigation = useNavigation();
   return (
@@ -93,6 +119,82 @@ const Signupscreen = () => {
   behavior={Platform.OS === "ios" ? "padding" : "height"}
   style={{ flex: 1 }}
 >
+
+   {AVATARmenu && (
+  <View
+    style={[
+      StyleSheet.absoluteFillObject,
+      {
+        zIndex: 20,
+        width: screenwidth,
+        height: screenHeight,
+      },
+    ]}
+  >
+    {/* iOS REAL BLUR */}
+    {Platform.OS === "ios" && (
+      <BlurView
+        tint="light"
+        intensity={50}
+        style={StyleSheet.absoluteFillObject}
+      />
+    )}
+
+    {/* ANDROID FAKE BLUR */}
+    {Platform.OS === "android" && (
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            backgroundColor: "rgba(255,255,255,0.85)",
+          },
+        ]}
+      />
+    )}
+
+  
+       <FlatList
+    data={avatars}
+    keyExtractor={(item) => item._id}
+    numColumns={NUM_COLUMNS}
+    showsVerticalScrollIndicator={false}
+    contentContainerStyle={{
+      paddingVertical: 64,
+      paddingHorizontal: 12,
+      paddingBottom: 120,
+    }}
+    renderItem={({ item }) => (
+      <TouchableOpacity
+        onPress={() => HandleAVATAR(item)}
+        style={{
+          width: ITEM_SIZE,
+          height: ITEM_SIZE,
+          margin: 8,
+          borderRadius: ITEM_SIZE / 2,
+          borderWidth: 2,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        className="border-primaryButton"
+      >
+        <Image
+          source={{ uri: item?.image?.asset?.url }}
+          style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: ITEM_SIZE / 2,
+          }}
+          resizeMode="cover"
+        />
+      </TouchableOpacity>
+    )}
+  />
+
+  
+  </View>
+)}
+
+
   <ScrollView
     className="h-full"
     style={{ backgroundColor: 'white' }}
@@ -102,20 +204,8 @@ const Signupscreen = () => {
 
           <Image source={BGImage} resizeMode='cover' className='h-20' style={{ width: screenwidth }} />
 
-          {AVATARmenu && (
-            <View className="absolute inset-0 z-10" style={{ width: screenwidth, height: screenHeight }}>
-              <ScrollView className="h-full">
-                <BlurView className="w-full h-full px-4 py-16 flex-wrap items-center justify-evenly" tint='light' intensity={40} style={{ width: screenwidth, height: screenHeight }}>
-                  {avatars?.map((item) => (
-                    <TouchableOpacity onPress={() => HandleAVATAR(item)}
-                      key={item._id} style={{ width: 100, height: 100, margin: 10, borderRadius: 50, borderWidth: 2 }} className="border-primaryButton">
-                      <Image source={{ uri: item?.image?.asset?.url }} style={{ width: '100%', height: '100%', borderRadius: 50 }} resizeMode='cover' />
-                    </TouchableOpacity>
-                  ))}
-                </BlurView>
-              </ScrollView>
-            </View>
-          )}
+        
+
 
           <View className='w-full h-full bg-white relative flex items-center justify-start py-6 px-6 space-y-6'>
             <View className="w-full flex items-center justify-center relative -my-4">

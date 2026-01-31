@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { doc, getDoc } from 'firebase/firestore';
 import { SET_USER } from '../context/actions/userActions';
 import { useDispatch } from 'react-redux';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 
 const Splashscreen = () => {
     const navigation = useNavigation();
@@ -25,7 +26,11 @@ const Splashscreen = () => {
                 }
 
                 if (!user.emailVerified) {
-                    alert("Verify your email address");
+                    Toast.show({
+                              type: ALERT_TYPE.WARNING,
+                              title: 'Email Not Verified',
+                              textBody:' Please verify your email before proceeding.',
+                            });
                     
                 } else {
                     navigation.replace("Homescreen");

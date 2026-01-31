@@ -9,6 +9,16 @@ import { BlurView } from 'expo-blur';
 import LoadingOverlay from './LoadingOverlay';
 import * as ImagePicker from 'expo-image-picker';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
+import { Dimensions, PixelRatio } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+const { width } = Dimensions.get('window');
+
+const scaleFont = (baseFont) => {
+  if (width <= 320) return baseFont * 0.75; // very small phones
+  if (width <= 360) return baseFont * 0.85; // small phones
+  if (width <= 375) return baseFont * 0.9;  // medium phones
+  return baseFont;                           // normal & large phones
+};
 
 const Chatscreen = ({ route }) => {
   const [IsPaid, setIsPaid] = useState(false)
@@ -302,6 +312,31 @@ const PAY = async () => {
         price: post.price,
       };
       await addDoc(collection(firestoreDB, 'Payments'), PaymentStatus);
+
+      // USER DEBIT TRANSACTION
+await addDoc(collection(firestoreDB, 'TransactionHistory'), {
+  userId: user._id,
+  type: 'debit',
+  amount: Price,
+  reason: `Payment to ${post.user.fullName}`,
+  relatedPostId: post._id,
+  relatedUserId: post.user._id,
+  createdAt: serverTimestamp()
+});
+
+// FREELANCER CREDIT TRANSACTION
+await addDoc(collection(firestoreDB, 'TransactionHistory'), {
+  userId: post.user._id,
+  type: 'credit',
+  amount: Price,
+  reason: `Payment from ${user.fullName}`,
+  relatedPostId: post._id,
+  relatedUserId: user._id,
+  createdAt: serverTimestamp()
+});
+
+
+
       setIsHired(false)
       setIsPaid(true);
       setIsApplying(false)
@@ -355,16 +390,18 @@ const PAY = async () => {
 
   return (
     <View style={{ flex: 1 }}>
+      <SafeAreaView className="bg-slate-300" style={{ flex: 1 }}>
+      
       
       <View className="flex-1">
         
-      <BlurView className="w-full bg-slate-300 px-4 py-1" tint='extraLight' intensity={40}>
+      <BlurView className="w-full bg-slate-300 px-4 py-1" >
   <View className="flex-row items-center justify-between w-full py-12 px-4">
     <TouchableOpacity onPress={() => navigation.goBack()}>
       <MaterialIcons name="chevron-left" size={32} color={"#fbfbfb"} />
     </TouchableOpacity>
 
-    <View style={{ flex: 1, alignItems: 'center' }}>
+    <View className='left-7' style={{ flex: 1, alignItems: 'center' }}>
       <View style={{ flexDirection: 'column', alignItems: 'center' }}>
         <TouchableOpacity onPress={viewProfile}>
           <View>
@@ -373,9 +410,21 @@ const PAY = async () => {
         </TouchableOpacity>
         <TouchableOpacity onPress={viewProfile}>
           <View>
-            <Text className="text-black text-base font-light capitalize shadow">
-              {post.user.fullName}
-            </Text>
+           <Text
+  style={{
+    color: '#000',
+    fontSize: scaleFont(16),       // scales based on screen
+    fontWeight: '300',
+    textTransform: 'capitalize',
+    textAlign: 'center',
+  }}
+  numberOfLines={1}                // ensures it stays in one line
+  adjustsFontSizeToFit={true}      // automatically shrinks font if too long
+  minimumFontScale={0.7}           // shrink down to 70% of original
+>
+  {post.user.fullName}
+</Text>
+
           </View>
         </TouchableOpacity>
       </View>
@@ -393,7 +442,19 @@ const PAY = async () => {
   <TouchableOpacity onPress={PAY}>
     <View style={{ left: 20 }} className="relative">
       <View className="border-1 left-7 mr-8 bg-yellow-400 border-emerald-950 rounded-lg p-4">
-        <Text className="font-bold text-zinc-950">PAY</Text>
+       <Text
+  style={{
+    fontSize: scaleFont(16),
+    fontWeight: '700',
+    color: '#000',
+  }}
+  numberOfLines={1}
+  adjustsFontSizeToFit={true}
+  minimumFontScale={0.7}
+>
+  PAY
+</Text>
+
       </View>
     </View>
   </TouchableOpacity>
@@ -404,7 +465,19 @@ const PAY = async () => {
   <TouchableOpacity disabled={isApplying} onPress={Employ}>
     <View style={{ left: 20 }} className="relative">
       <View className="border-1 left-7 bg-red-400 border-emerald-950 mr-8 rounded-lg p-4">
-        <Text className="font-bold text-zinc-950">HIRE</Text>
+      <Text
+  style={{
+    fontSize: scaleFont(16),
+    fontWeight: '700',
+    color: '#000',
+  }}
+  numberOfLines={1}
+  adjustsFontSizeToFit={true}
+  minimumFontScale={0.7}
+>
+  HIRE
+</Text>
+
       </View>
     </View>
   </TouchableOpacity>
@@ -430,7 +503,19 @@ const PAY = async () => {
   <TouchableOpacity disabled>
     <View style={{ left: 20 }} className="relative">
       <View style={{ backgroundColor: "#88E788" }} className="border-1 left-7  border-emerald-950 mr-8 rounded-lg p-4">
-        <Text className="font-bold text-zinc-950">PAID</Text>
+        <Text
+  style={{
+    fontSize: scaleFont(16),
+    fontWeight: '700',
+    color: '#000',
+  }}
+  numberOfLines={1}
+  adjustsFontSizeToFit={true}
+  minimumFontScale={0.7}
+>
+  PAID
+</Text>
+
       </View>
     </View>
   </TouchableOpacity>
@@ -449,11 +534,23 @@ const PAY = async () => {
 
       {
         user._id == post.index1 && FreelanceHired ?
-        <View style={{ left: 20 }} className="relative">  
-                  <View style={{ backgroundColor: "#facc15" }} className="border-1 left-7 mr-8 border-emerald-950 rounded-lg p-4">
-                    <Text className="font-bold text-zinc-950">HIRED</Text>
-                  </View>
-                </View>
+        <View style={{ left: 20 }} className="relative">
+      <View style={{ backgroundColor: "#facc15" }} className="border-1 left-7  border-emerald-950 mr-8 rounded-lg p-4">
+        <Text
+  style={{
+    fontSize: scaleFont(16),
+    fontWeight: '700',
+    color: '#000',
+  }}
+  numberOfLines={1}
+  adjustsFontSizeToFit={true}
+  minimumFontScale={0.7}
+>
+  HIRED
+</Text>
+
+      </View>
+    </View>
 
      
                 :
@@ -470,8 +567,8 @@ const PAY = async () => {
         <View className="w-full bg-gray-100 px-4 py-6 flex-1 -mt-10">
           <KeyboardAvoidingView
             className="flex-1"
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={140}
+            behavior={Platform.OS === "ios" ? "padding" : "padding"}
+            keyboardVerticalOffset={190}
           
           >
             <>
@@ -493,9 +590,19 @@ const PAY = async () => {
         ) : (
           <View  className="px-4 py-2 rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl bg-blue-400 w-auto relative ">
 
-          <Text className="text-base font-semibold text-white">
-            {msg.message}
-          </Text>
+         <Text
+  style={{
+    fontSize: scaleFont(14),        // responsive font size
+    fontWeight: '600',               // equivalent to font-semibold
+    color: '#fff',                   // keep white text
+  }}
+  numberOfLines={1}                  // keeps it on a single line (optional)
+  adjustsFontSizeToFit={true}        // shrink font if it overflows
+  minimumFontScale={0.7}             // shrink down to 70% of original size
+>
+  {msg.message}
+</Text>
+
           </View>
         )}
    
@@ -508,7 +615,19 @@ const PAY = async () => {
           <View className="px-4 py-2 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl bg-gray-300 w-auto relative ">
 
           <Text className="text-base  text-black">
-            {msg.message}
+           <Text
+  style={{
+    fontSize: scaleFont(14),        // responsive font size
+    fontWeight: '600',               // equivalent to font-semibold
+                      // keep white text
+  }}
+  numberOfLines={1}                  // keeps it on a single line (optional)
+  adjustsFontSizeToFit={true}        // shrink font if it overflows
+  minimumFontScale={0.7}             // shrink down to 70% of original size
+>
+  {msg.message}
+</Text>
+
           </Text>
           </View>
           
@@ -545,8 +664,8 @@ const PAY = async () => {
                 <View className="bg-gray-200 rounded-2xl px-4 space-x-4 py-2 flex-row items-center justify-center">
                   
                   <TextInput
-                    className="flex-1 h-8 text-base text-primaryText font-semibold"
-                    placeholder="Type here..."
+                    className="flex-1 h-fit text-base text-primaryText font-semibold"
+                    placeholder="Send a Chat "
                     placeholderTextColor="#999"
                     value={message}
                     onChangeText={(text) => { setMessage(text) }}
@@ -559,10 +678,13 @@ const PAY = async () => {
                   <FontAwesome name="send" size={24} color="light-blue" />
                 </TouchableOpacity>
               </View>
+
+              
             </>
           </KeyboardAvoidingView>
         </View>
       </View>
+      </SafeAreaView>
     </View>
   );
 };

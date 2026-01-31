@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Text, View, SafeAreaView, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { Text, View, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Image } from 'react-native-elements';
 import { useSelector, useDispatch } from 'react-redux';
 import { firebaseAuth, firestoreDB } from '../config/firebase.config';
@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useFonts, Dosis_200ExtraLight, Dosis_400Regular, Dosis_800ExtraBold } from '@expo-google-fonts/dosis';
 import { MaterialIcons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ViewProfilescreen = ({ route }) => {
   const { post } = route.params;
@@ -103,27 +104,154 @@ const ViewProfilescreen = ({ route }) => {
                 <Text className="text-gray-500">Hires</Text>
               </View>
             </View>
-            <View className="mt-4">
-              <Text className="text-base text-gray-500">Course of study: <Text className="text-base font-bold">{details.length > 0 ? details[0].Hostel : 'No course'}</Text></Text>
-            </View>
 
-            <View className="mt-2">
-            <Text className="mt-5 font-semibold">About {post.user.fullName}</Text>
 
-            </View>
 
-            <View className="mt-4">
-              <Text className="text-base font-thin">{details.length > 0 ? details[0].About : 'No bio'}</Text>
-            </View>
-            <View className="mt-4" style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-              {details.length > 0 && typeof details[0].Skills === 'string' && details[0].Skills.length > 0 && (
-                details[0].Skills.split(', ').map((skill, index) => (
-                  <View key={index} style={{ borderColor: "#268290", borderWidth: 1, borderRadius: 20, padding: 8, margin: 4 }}>
-                    <Text className="capitalize">{skill}</Text>
-                  </View>
-                ))
-              )}
-            </View>
+            <View style={{ marginBottom: 12}}  className="w-full flex-row items-center mt-4" >
+<View className="mt-1">
+  <View className="relative rounded-3xl bg-white p-5 shadow-lg border border-gray-100">
+    
+    {/* Accent bar */}
+    <View
+      style={{
+        position: 'absolute',
+        left: 0,
+        top: 20,
+        bottom: 20,
+        width: 4,
+        backgroundColor: '#268290',
+        borderRadius: 10,
+      }}
+    />
+
+    {/* Header */}
+    <Text
+      style={{
+        fontSize: 12,
+        letterSpacing: 2,
+        color: '#268290',
+        fontWeight: '600',
+        marginBottom: 10,
+        marginLeft: 8,
+      }}
+    >
+      COURSE OF STUDY
+    </Text>
+
+    {/* Value */}
+    <Text
+      style={{
+        fontSize: 16,
+        color: '#111',
+        fontWeight: '400',
+        marginLeft: 8,
+        textTransform: 'capitalize',
+      }}
+    >
+      {details.length > 0 && details[0].Hostel
+        ? details[0].Hostel
+        : 'Not specified'}
+    </Text>
+  </View>
+</View>
+</View>
+
+ <View  className="relative rounded-3xl bg-white p-5 shadow-lg border border-gray-100">
+      
+      {/* Accent bar */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 20,
+          bottom: 20,
+          
+          width: 4,
+          backgroundColor: '#268290',
+          borderRadius: 10,
+        }}
+      />
+
+      {/* Header */}
+      <View className="flex-row items-center justify-between mb-2">
+      <Text
+        style={{
+          fontSize: 12,
+          letterSpacing: 2,
+          color: '#268290',
+          fontWeight: '600',
+          marginBottom: 12,
+          marginLeft: 8,
+        }}
+      >
+        ABOUT ME
+      </Text>
+      </View>
+
+      {/* Content */}
+      {details.length > 0 && details[0].About ? (
+        <Text
+          style={{
+            fontSize: 16,
+            lineHeight: 24,
+            color: '#111',
+            fontWeight: '300',
+            marginLeft: 8,
+          }}
+        >
+          {details[0].About}
+        </Text>
+      ) : (
+        <Text
+          style={{
+            fontSize: 14,
+            fontStyle: 'italic',
+            color: '#9ca3af',
+            marginLeft: 8,
+          }}
+        >
+          No bio yet — this is where personality lives.
+        </Text>
+      )}
+    </View>
+
+<View
+  style={{
+    height: 1,          // thickness of the line
+    width: '100%',      // full width
+    backgroundColor: '#d1d5db', // light gray color
+    marginTop: 20,
+  }}
+/>
+
+       <Text className="mt-5 font-semibold">Skills</Text>
+
+        
+          <View className="mt-4" style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                       {details.length > 0 && typeof details[0].Skills === 'string' && details[0].Skills.length > 0 && (
+                         details[0].Skills.split(', ').map((skill, index) => (
+                           
+                           <View key={index} >
+         
+         
+                          
+                
+                                 <View style={{ borderColor: "#268290", borderWidth: 1, borderRadius: 20, padding: 8, margin: 4 }}>
+                                    <Text className="capitalize">{skill}</Text>
+                                </View>
+                
+  </View>
+))
+                        )}          </View> 
+
+             <View
+  style={{
+    height: 1,          // thickness of the line
+    width: '100%',      // full width
+    backgroundColor: '#d1d5db', // light gray color
+    marginTop: 20,
+  }}
+/>
             <View className="w-full flex-row items-center">
               <Text className="mt-5 font-semibold">Portfolio</Text>
             </View>
@@ -158,6 +286,7 @@ const ViewProfilescreen = ({ route }) => {
               )}
             </View>
           </>
+          
         )}
       </ScrollView>
     </SafeAreaView>

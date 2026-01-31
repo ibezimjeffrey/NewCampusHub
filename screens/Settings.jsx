@@ -1,366 +1,473 @@
-import { View, Text, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+  Modal,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { firebaseAuth, firestoreDB } from '../config/firebase.config';
-import { useDispatch, useSelector } from 'react-redux';
-import { collection, query, where, getDocs, getDoc, setDoc, doc, onSnapshot } from 'firebase/firestore'; 
+import { useSelector } from 'react-redux';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  getDoc,
+  setDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  addDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import { Paystack } from 'react-native-paystack-webview';
 import axios from 'axios';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
-
-
-import { SET_USERMediaTypeOptions } from '../context/actions/userActions';
 import LoadingOverlay from './LoadingOverlay';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Settings = () => {
   const user = useSelector((state) => state.user.user);
-  const [details, setDetails] = useState('');
-  const [start, setstart] = useState(false);
-  const [value4, setvalue4] = useState(''); 
-  const [Balance, setBalance] = useState(0);
-  const [Payed, setPayed] = useState(false);
-  const [isApplying, setIsApplying] = useState(false);
-  const [add, setadd] = useState(false);
-  const [withdraw, setwithdraw] = useState(false);
-  const [number, setnumber] = useState(""); 
   const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const [IsWithdrawing, setIsWithdrawing] = useState(false)
+  const [IsAdding, setIsAdding] = useState(false);
+  const [details, setDetails] = useState([]);
+  const [Balance, setBalance] = useState(0);
+  const [transactions, setTransactions] = useState([]);
 
-    useEffect(() => {
-      const msgQuery = query(collection(firestoreDB, 'users', user._id, 'details'));
-      const unsubscribe = onSnapshot(msgQuery, (querySnapshot) => {
-        const upMsg = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setDetails(upMsg);
-      
-      });
-      
-      return unsubscribe;
-    }, []);
+  // Add Money states
+  const [add, setAdd] = useState(false);
+  const [start, setStart] = useState(false);
+  const [value4, setValue4] = useState('');
+  const [number, setNumber] = useState('');
 
+  // Withdraw states
+  const [withdraw, setWithdraw] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [withdrawNumber, setWithdrawNumber] = useState(0);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
-  const handleTextChange4 = (text) => {
+  const [isApplying, setIsApplying] = useState(false);
+
+  // Fetch bank details
+  useEffect(() => {
+    const q = query(collection(firestoreDB, 'users', user._id, 'details'));
+    const unsub = onSnapshot(q, (snap) => {
+      setDetails(snap.docs.map((d) => d.data()));
+    });
+    return unsub;
+  }, []);
+
+  // Fetch balance
+  useEffect(() => {
+    const fetchBalance = async () => {
+      const ref = doc(firestoreDB, 'Balance', user._id);
+      const snap = await getDoc(ref);
+      if (snap.exists()) {
+        setBalance(parseFloat(snap.data().Amount));
+      } else {
+        await setDoc(ref, { Amount: 0 });
+        setBalance(0);
+      }
+    };
+    fetchBalance();
+  }, [user._id]);
+
+  // Fetch transactions
+  useEffect(() => {
+    const q = query(
+      collection(firestoreDB, 'TransactionHistory'),
+      where('userId', '==', user._id),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsub = onSnapshot(q, (snap) => {
+      setTransactions(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    });
+
+    return unsub;
+  }, [user._id]);
+
+  // Shared input formatter
+  const formatInput = (text, setter, numSetter) => {
+    const numeric = text.replace(/[^0-9]/g, '');
+    setter(numeric ? Number(numeric).toLocaleString() : '');
+    numSetter(numeric ? parseFloat(numeric) : 0);
+  };
+
+   const handleTextChange4 = (text) => {
     const numericText = text.replace(/[^0-9]/g, '');
     const formattedText = numericText ? Number(numericText).toLocaleString() : '';
-    setvalue4(formattedText);
+    setValue4(formattedText);
     const amountInKobo = numericText ? parseFloat(numericText) : 0;
-    setnumber(amountInKobo);
+    setNumber(amountInKobo);
   };
 
-  const CancelEdit = () => {
-    setadd(false);
-    setnumber("");
-  };
- const CancelEdit1 = () => {
-    setwithdraw(false);
-    setnumber("");
+  // Add Money Handlers
+  const openAdd = () => {
+    setAdd(true);
+    setWithdraw(false);
   };
 
-  const Begin = () => {
-  setwithdraw(false);   // 🔴 REMOVE withdraw UI
-  setadd(true);         // 🟢 SHOW add UI
-  setvalue4('');
-  setnumber('');
-};
-
-const Begin2 = () => {
-  setadd(false);        // 🔴 REMOVE add UI
-  setwithdraw(true);    // 🟢 SHOW withdraw UI
-  setvalue4('');
-  setnumber('');
-};
-
-  const Begin1 = async () => {  
-    setstart(true)
+  const confirmAdd = () => {
+    if (number > 0) {
+      setStart(true);
+    }
   };
 
-  
+  const cancelAdd = () => {
+    setAdd(false);
+    setValue4('');
+    setNumber(0);
+  };
 
-  useEffect(() => {
-    const getUserBalance = async () => {
-      try {
-        const balanceDocRef = doc(firestoreDB, 'Balance', user._id);
-        const balanceDocSnapshot = await getDoc(balanceDocRef);
-  
-        if (balanceDocSnapshot.exists()) {
-          const existingBalance = parseFloat(balanceDocSnapshot.data().Amount);
-          setBalance(existingBalance);
-        } else {
-          const totalBalance = await calculateTotalFromStatus();
-          await setDoc(balanceDocRef, { Amount: totalBalance, id: user._id });
-          setBalance(totalBalance);
-        }
-      } catch (error) {
-        console.error("Error fetching initial balance: ", error);
-      }
-    };
-  
-    const calculateTotalFromStatus = async () => {
-      try {
-        const balancesQuery = query(
-          collection(firestoreDB, 'Status'),
-          where('receipient._id', '==', user._id)
-        );
-  
-        const querySnapshot = await getDocs(balancesQuery);
-        let totalBalance = 0;
-  
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const cleanedPrice = data.price.replace(/,/g, '');
-          if (cleanedPrice) {
-            totalBalance += parseFloat(cleanedPrice);
-          }
-        });
-  
-        return totalBalance;
-      } catch (error) {
-        console.error("Error calculating balance from status: ", error);
-        return 0;
-      }
-    };
-  
-    getUserBalance();
-  }, [user._id]); 
-  
+  // Withdraw Handlers
+  const openWithdraw = () => {
+    setWithdraw(true);
+    setAdd(false);
+    setWithdrawAmount('');
+    setWithdrawNumber(0);
+  };
+
+  const cancelWithdraw = () => {
+    setWithdraw(false);
+    setWithdrawAmount('');
+    setWithdrawNumber(0);
+  };
+
+  const confirmWithdraw = async () => {
+    if (withdrawNumber > Balance) {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: 'Insufficient Balance',
+        textBody: 'You do not have enough funds',
+      });
+      return;
+    }
+
+    if (!details[0]?.AccountNumber) {
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: 'No Bank Account',
+        textBody: 'Please add bank details first',
+      });
+      return;
+    }
+
+    try {
+      setIsWithdrawing(true);
+
+      await axios.post(
+        'https://ruachbackend.onrender.com/withdraw',
+        {
+          userId: user._id,
+          amount: withdrawNumber * 100,
+          accountNumber: details[0]?.AccountNumber,
+          bankCode: details[0]?.Bank,
+          name: user.fullName,
+        },
+        { headers: { 'x-api-key': '3a7f9b2d-87f4-4c7a-b88d-9c63f07e6d12' } }
+      );
+
+      const newBalance = Balance - withdrawNumber;
+      await setDoc(doc(firestoreDB, 'Balance', user._id), { Amount: newBalance });
+
+      await addDoc(collection(firestoreDB, 'TransactionHistory'), {
+        userId: user._id,
+        type: 'debit',
+        amount: withdrawNumber,
+        reason: 'Wallet withdrawal',
+        createdAt: serverTimestamp(),
+      });
+
+      setBalance(newBalance);
+      setWithdraw(false);
+      setWithdrawAmount('');
+      setWithdrawNumber(0);
+
+      Toast.show({
+        type: ALERT_TYPE.SUCCESS,
+        title: 'Withdrawal Sent 💸',
+        textBody: 'Your funds will arrive within 3–4 hours',
+      });
+    } catch (err) {
+      console.error(err);
+      Toast.show({
+        type: ALERT_TYPE.DANGER,
+        title: 'Withdrawal Failed',
+        textBody: 'Please try again later',
+      });
+    } finally {
+      setIsWithdrawing(false);
+    }
+  };
 
   const onPaymentSuccess = async (amount) => {
     const newBalance = Balance + amount;
-    try {
-      const balanceDocRef = doc(firestoreDB, 'Balance', user._id);
-      await setDoc(balanceDocRef, { Amount: newBalance });
-      setBalance(newBalance);
-      console.log("Balance updated successfully in Firestore!");
-    } catch (error) {
-      console.error("Error updating balance in Firestore: ", error);
-    }
-  };
-
-  // call your backend to withdraw:
-  const withdrawFunds = async () => {
- 
-
-    try {
-         if (number > Balance) {
-Toast.show({
-  type: ALERT_TYPE.WARNING,
-  title: 'Insufficient Balance',
-  textBody: 'You do not have enough funds',
-});
-
-
-  return;
-}
-
-
-setIsWithdrawing(true)
-
-      const res = await axios.post(
-        
-        // while testing on Expo Go, use your laptop IP + port
-        'https://ruachbackend.onrender.com/withdraw', // <--- replace with your LAN IP or live URL
-        {
-          userId: user._id,
-          amount: number*100,  // amount in Naira
-          accountNumber: details[0].AccountNumber, // test account number
-          bankCode: details[0].Bank ,             // test bank code
-          name: user.fullName
-        },
-        {
-          headers: {
-            'x-api-key': '3a7f9b2d-87f4-4c7a-b88d-9c63f07e6d12'
-          }
-        }
-      );
-      console.log('Withdraw response:', res.data);
-    Toast.show({
-  type: ALERT_TYPE.SUCCESS,
-  title: 'Withdrawal Sent 💸',
-  textBody: 'Your funds will arrive in your bank within 3–4 hours..',
-});
-
-      setnumber("");
-      setwithdraw(false);
-      setIsWithdrawing(false)
-
-
-    } catch (err) {
-      console.error('Withdraw error:', err);
-    }
+    await setDoc(doc(firestoreDB, 'Balance', user._id), { Amount: newBalance });
+    await addDoc(collection(firestoreDB, 'TransactionHistory'), {
+      userId: user._id,
+      type: 'credit',
+      amount,
+      reason: 'Wallet funding',
+      createdAt: serverTimestamp(),
+    });
+    setBalance(newBalance);
   };
 
   const logout = async () => {
-    await firebaseAuth.signOut().then(() => {
-      setIsApplying(true);
-  
-      navigation.replace('Loginscreen');
-    });
+    setIsApplying(true);
+   
+   await firebaseAuth.signOut();
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#FFF" }}>
+    <View className="flex-1 bg-white">
       <SafeAreaView>
-        <ScrollView className="h-full" style={{ paddingHorizontal: 10, paddingTop: 10 }}>
-          <View className="flex-row justify-end pt-4">
+        <ScrollView className="px-4">
+
+          {/* Header */}
+          <View className="flex-row justify-between pt-4">
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <MaterialIcons name="chevron-left" size={32} color="#268290" />
+            </TouchableOpacity>
             <TouchableOpacity onPress={logout}>
               {isApplying ? (
-                <ActivityIndicator className="py-3 w-8 h-12" size="large" color="#268290" />
+                <ActivityIndicator color="#268290" />
               ) : (
-                <Text style={{ color: "#268290" }} className="font-bold text-lg">Logout</Text>
+                <Text className="text-[#268290] font-bold">Logout</Text>
               )}
             </TouchableOpacity>
           </View>
-          <View className="h-full">
-            <View className="right-6" style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 10 }}>
-              <TouchableOpacity onPress={() => navigation.goBack()} className="absolute left-4">
-                <MaterialIcons name='chevron-left' size={32} color={"#268290"} />
+
+          {/* Balance */}
+          <View className="items-center mt-10">
+            <Text className="text-4xl font-bold">
+              ₦{Balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            </Text>
+            <Text className="text-gray-500 mt-1">Available Balance</Text>
+          </View>
+
+          {/* Deposit / Withdraw Buttons */}
+          <View className="items-center mt-8">
+            <View className="border border-[#268290] rounded-2xl flex-row justify-around w-4/5 py-5">
+              <TouchableOpacity onPress={openAdd} className="items-center">
+                <View className="w-14 h-14 border border-[#268290] rounded-full items-center justify-center">
+                  <MaterialIcons name="add" size={28} color="#268290" />
+                </View>
+                <Text className="mt-2 font-medium">Deposit</Text>
               </TouchableOpacity>
-            </View>
 
-            <View className="items-center mt-8">
-              <Text className="text-3xl font-bold pt-4">
-                N{Balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </Text>
-              <Text className="text-base font-bold text-gray-500">Available Balance</Text>
-            </View>
-
-            <View className="justify-center items-center">
-  <View
-    className="border-primaryButton border rounded-xl mt-2"
-    style={{
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-around", // changed from space-between
-      paddingVertical: 10,
-      backgroundColor: "#FFFFFF",
-      paddingHorizontal: 30, // reduced to avoid too much side padding
-      width: "80%", // optional: control container width
-    }}
-  >
-    {/* Add Button */}
-    <View className="items-center">
-      <TouchableOpacity
-        onPress={Begin}
-        className="w-12 h-12 border border-primaryButton rounded-full flex items-center justify-center"
-      >
-        <MaterialIcons name="add" size={26} color="#268290" />
-      </TouchableOpacity>
-      <Text className="mt-1 font-extralight">Add</Text>
-    </View>
-
-    {/* Withdraw Button */}
-    <View className="items-center">
-      <TouchableOpacity
-        onPress={Begin2}
-        className="w-12 h-12 border border-primaryButton rounded-full flex items-center justify-center"
-      >
-        <MaterialIcons name="arrow-downward" size={26} color="#268290" />
-      </TouchableOpacity>
-      <Text className="mt-1 font-extralight">Withdraw</Text>
-    </View>
-  </View>
-</View>
-            <View className="items-center mt-6">  
-
-              {start && (
-                <Paystack  
-                  paystackKey="pk_test_bb056f19149cb6867f38cb9019f7f94defd87bc0"  
-                  amount={number} 
-                 // channels={["card", "bank", "bank_transfer", "ussd"]}
-                  billingEmail={user.email} 
-                  onCancel={(e) => {
-                    console.log("Transaction canceled:", e);
-                    setstart(false);
-                  }}
-                  onSuccess={async (res) => {
-                    console.log("Transaction successful:", res);
-                    Toast.show({
-  type: ALERT_TYPE.SUCCESS,
-  title: 'Your wallet has been credited 💸',
-});
-
-                    setstart(false);
-                    setadd(false);
-                    setnumber("");
-                    await onPaymentSuccess(number);
-                  }}
-                  autoStart={true}
-                />
-              )}
+              <TouchableOpacity onPress={openWithdraw} className="items-center">
+                <View className="w-14 h-14 border border-[#268290] rounded-full items-center justify-center">
+                  <MaterialIcons name="arrow-downward" size={28} color="#268290" />
+                </View>
+                <Text className="mt-2 font-medium">Withdraw</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
-          {IsWithdrawing ? (
-        <LoadingOverlay visible={true} />
         
-        ) : (
-          ""
-        )}
 
-          {add && (
-            <View style={{bottom: 119}} className="left-13 flex-row justify-between gap-x-4">
-              <View className="relative bottom-5">
-                <Text style={{ position: 'relative', left: 24, top: 55, color: 'black', fontSize: 16 }}>₦</Text>
-                <TextInput
-                  className="border border-gray-400 rounded-2xl w-[160px] px-4 py-9 flex-row items-center justify-between space-x-8 left-5"
-                  onChangeText={handleTextChange4}
-                  value={value4}
-                  placeholder='Add amount'
-                  keyboardType="numeric"
-                />
-              </View>
-              
-              <TouchableOpacity onPress={Begin1}>
-                <View className="top-5 w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
-                  <MaterialIcons name='check' size={26} color={'#fff'} />
+          {/* Transactions */}
+          <View className="mt-12">
+            <Text className="text-xl font-bold mb-4">Recent Transactions</Text>
+            {transactions.length === 0 ? (
+              <Text className="text-center text-gray-500">No transactions yet</Text>
+            ) : (
+              transactions.map((tx) => (
+                <View key={tx.id} className="flex-row justify-between py-4 border-b border-gray-200">
+                  <View>
+                    <Text className="font-medium">{tx.reason}</Text>
+                    <Text className="text-xs text-gray-500">
+                      {tx.createdAt?.seconds
+                        ? new Date(tx.createdAt.seconds * 1000).toLocaleDateString()
+                        : 'Just now'}
+                    </Text>
+                  </View>
+                  <Text
+                    className={`font-bold ${
+                      tx.type === 'credit' ? 'text-green-600' : 'text-red-600'
+                    }`}
+                  >
+                    {tx.type === 'credit' ? '+' : '-'}₦{tx.amount.toLocaleString()}
+                  </Text>
                 </View>
-              </TouchableOpacity>
-              
-              <TouchableOpacity onPress={CancelEdit}>
-                <View className="top-5 w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
-                  <MaterialIcons name='clear' size={26} color={'#fff'} />
-                </View>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {withdraw && (
-            <View style={{bottom: 119}} className="left-13 flex-row justify-between gap-x-4">
-              <View className="relative bottom-5">
-                <Text style={{ position: 'relative', left: 24, top: 55, color: 'black', fontSize: 16 }}>₦</Text>
-                <TextInput
-                  className="border border-gray-400 rounded-2xl w-[160px] px-4 py-9 flex-row items-center justify-between space-x-8 left-5"
-                  onChangeText={handleTextChange4}
-                  value={value4}
-                  placeholder='Withdraw Amount'
-                  keyboardType="numeric"
-                />
-              </View>
-              
-              <TouchableOpacity onPress={withdrawFunds}>
-                <View className="top-5 w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
-                  <MaterialIcons name='check' size={26} color={'#fff'} />
-                </View>
-              </TouchableOpacity>
-              
-              <TouchableOpacity onPress={CancelEdit1}>
-                <View className="top-5 w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
-                  <MaterialIcons name='clear' size={26} color={'#fff'} />
-                </View>
-              </TouchableOpacity>
-            </View>
-          )}
-
-
-
-
-
+              ))
+            )}
+          </View>
         </ScrollView>
       </SafeAreaView>
+
+      {/* === NEW WITHDRAW MODAL (Replaces old inline input) === */}
+
+      <ScrollView>
+
+      
+      <Modal visible={withdraw} transparent animationType="slide">
+          <KeyboardAvoidingView
+                    className="flex-1"
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+              
+                  
+                  >
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-[#268290] rounded-t-3xl overflow-hidden">
+            {/* Header */}
+            <View className="items-center py-8">
+
+              <Text className="text-6xl mt-6">💰</Text>
+            </View>
+
+            {/* Input Section */}
+            <View className="bg-white rounded-t-3xl px-6 pt-10 pb-12">
+              <Text className="text-lg text-center text-gray-800 mb-6">Enter Amount to Withdraw</Text>
+
+              <View className="flex-row items-center bg-gray-100 rounded-2xl px-6 h-20">
+                <Text className="text-4xl font-bold mr-3">₦</Text>
+                <TextInput
+                  className="flex-1 text-4xl font-bold text-black pt-1"
+                  keyboardType="numeric"
+                  placeholder="0"
+                  value={withdrawAmount}
+                  onChangeText={(text) => formatInput(text, setWithdrawAmount, setWithdrawNumber)}
+                />
+              </View>
+
+              <Text className="text-center text-gray-500 mt-6">
+                Funds will be sent to your linked bank account
+              </Text>
+
+              {/* Buttons */}
+              <TouchableOpacity
+                onPress={confirmWithdraw}
+                disabled={isWithdrawing || withdrawNumber === 0}
+                className="mt-10 bg-black rounded-full py-5 items-center"
+              >
+                <Text className="text-white text-lg font-bold">
+                  {isWithdrawing ? 'Processing...' : 'Continue'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={cancelWithdraw} className="mt-5 items-center">
+                <Text className="text-gray-600 text-base">Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+        </KeyboardAvoidingView>
+      </Modal>
+      </ScrollView>
+
+
+
+
+
+
+         <ScrollView>
+
+      
+      <Modal visible={add} transparent animationType="slide">
+         <KeyboardAvoidingView
+                    className="flex-1"
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+              
+                  
+                  >
+
+                  
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="bg-[#268290] rounded-t-3xl overflow-hidden">
+            {/* Header */}
+            <View className="items-center py-8">
+
+              <Text className="text-6xl mt-6">💰</Text>
+            </View>
+
+            {/* Input Section */}
+            <View className="bg-white rounded-t-3xl px-6 pt-10 pb-12">
+              <Text className="text-lg text-center text-gray-800 mb-6">Enter Amount to Deposit</Text>
+
+              <View className="flex-row items-center bg-gray-100 rounded-2xl px-6 h-20">
+                <Text className="text-4xl font-bold mr-3">₦</Text>
+                <TextInput
+                  className="flex-1 text-4xl font-bold text-black pt-1"
+                  keyboardType="numeric"
+                  placeholder="0"
+                  value={value4}
+                  onChangeText={handleTextChange4}
+                />
+              </View>
+
+              <Text className="text-center text-gray-500 mt-6">
+                Funds will be deposited from your bank account
+              </Text>
+
+              {/* Buttons */}
+              <TouchableOpacity
+                onPress={() => {
+  setAdd(false); 
+  setValue4('')  
+  setStart(true); 
+}}
+
+                className="mt-10 bg-black rounded-full py-5 items-center"
+              >
+                <Text className="text-white text-lg font-bold">
+                  {!add ? 'Processing...' : 'Continue'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={cancelAdd} className="mt-5 items-center">
+                <Text className="text-gray-600 text-base">Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+        </KeyboardAvoidingView>
+      </Modal>
+      </ScrollView>
+
+
+
+
+
+      {/* Paystack for Add Money */}
+      {start && (
+        <Paystack
+          paystackKey="pk_test_bb056f19149cb6867f38cb9019f7f94defd87bc0"
+          amount={number}
+          billingEmail={user.email}
+          onCancel={() => {
+            setIsAdding(true);
+            setStart(false);
+            setAdd(false);
+          }}
+          onSuccess={async () => {
+            await onPaymentSuccess(number);
+            Toast.show({
+              type: ALERT_TYPE.SUCCESS,
+              title: 'Wallet credited 💸',
+            });
+            setIsAdding(false);
+            setStart(false);
+            setAdd(false);
+            setValue4('');
+            setNumber(0);
+          }}
+          autoStart
+        />
+      )}
+
+      {isWithdrawing && <LoadingOverlay visible />}
     </View>
   );
 };
 
-export default Settings;
+export default Settings

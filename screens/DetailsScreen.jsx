@@ -175,7 +175,7 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
         </View>
         <View className="flex items-center">
           <MaterialIcons name='calendar-month' size={24} color={"#268290"} />
-          <Text className="text-base text-primaryButton mt-1">{post.Type}</Text>
+          <Text className="text-base text-primaryButton mt-1">{post.DisplayTime}</Text>
         </View>
         <View className="flex items-center">
           <Text className="" style={{fontSize:24, color:"#268290"}}>₦</Text>

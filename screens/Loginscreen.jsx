@@ -18,6 +18,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { firebaseAuth, firestoreDB } from '../config/firebase.config';
 import { doc, getDoc } from 'firebase/firestore';
 import { useDispatch } from 'react-redux';
+import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 import { SET_USER } from '../context/actions/userActions';
 
 const Loginscreen = () => {
@@ -78,77 +79,118 @@ const Loginscreen = () => {
         setIsApplying(false);
         setalert(true);
         if (err.message.includes("invalid-credential")) {
-          setalertMessage("Wrong credentials");
+           Toast.show({
+            type: ALERT_TYPE.WARNING,
+            title: 'Invalid Credentials',
+            textBody:'Check your email and password and try again.',
+          });
         } else if (err.message.includes("network-request-failed")) {
-          setalertMessage("Check Internet Connection");
-          setTimeout(() => setalert(false), 9000);
+          Toast.show({
+            type: ALERT_TYPE.WARNING,
+            title: 'Network Error',
+            textBody:'Check your network connection.',
+          });
         } else if (err.message.includes("user-not-found")) {
-          setalertMessage("User not found");
-          setTimeout(() => setalert(false), 2000);
+           Toast.show({
+            type: ALERT_TYPE.WARNING,
+            title: 'Invalid Credentials',
+            textBody:'Check your email and password and try again.',
+          });
         } else {
-          setalertMessage("Invalid Email Address");
-          setTimeout(() => setalert(false), 2000);
+          Toast.show({
+            type: ALERT_TYPE.WARNING,
+            title: 'Invalid Credentials',
+            textBody:'Check your email and password and try again.',
+          });
         }
       } finally {
         setIsApplying(false);
       }
     } else {
       setIsApplying(false);
-      setalert(true);
-      setalertMessage("Please enter a valid email.");
+      Toast.show({
+            type: ALERT_TYPE.WARNING,
+            title: 'Invalid Credentials',
+            textBody:'Check your email and password and try again.',
+          })
       setTimeout(() => setalert(false), 2000);
     }
   };
 
   return (
     <KeyboardAvoidingView
-    className="bg-white"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View className="flex-1 items-center justify-center px-6">
-          <Image source={Logo} className="w-16 h-16 bottom-11 mb-11" resizeMode="contain" />
+  className="flex-1 bg-white"
+  behavior={Platform.OS === "ios" ? "padding" : "padding"}
+>
+  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <View className="flex-1 items-center justify-center px-6">
 
-          <View className="w-full flex-row bottom-10 justify-center space-x-2">
-            <Text className="text-base font-thin  text-primaryText">Don't have an Account?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("Signupscreen")}>
-              <Text className="text-base font-semibold text-primaryButton">Create Account</Text>
-            </TouchableOpacity>
-          </View>
+      {/* Logo */}
+      <Image
+        source={Logo}
+        className="w-16 h-16 mb-8"
+        resizeMode="contain"
+      />
 
-          <Text className="text-base bottom-6 font-extralight mt-2">Or</Text>
-          <Text className="text-lg font-bold mb-4">Sign in</Text>
+      {/* Create account row */}
+      <View className="flex-row justify-center items-center mb-6 space-x-2">
+        <Text className="text-base font-thin text-primaryText">
+        
+        </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Signupscreen")}>
+          <Text className="text-base font-semibold text-primaryButton">
+            Create Account
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-          {alert && <Text className="text-base text-red-500 mb-2">{alertMessage}</Text>}
+      {/* Divider */}
+      <Text className="text-base font-extralight mb-2">Or</Text>
+      <Text className="text-lg font-bold mb-4">Sign in</Text>
 
-          <Userinput
-            Placeholder="Email"
-            isPass={false}
-            setstateValue={setemail}
-            setgetEmailValidationStatus={setgetEmailValidationStatus}
-          />
-          <Userinput Placeholder="Password" isPass={true} setstateValue={setpassword} />
+      {/* Alert */}
+      {alert && (
+        <Text className="text-base text-red-500 mb-2">
+          {alertMessage}
+        </Text>
+      )}
 
-          <Animated.View style={{ marginBottom: buttonMargin }}>
-            <TouchableOpacity
+      {/* Inputs */}
+      <View className="w-full space-y-3">
+        <Userinput
+          Placeholder="Email"
+          isPass={false}
+          setstateValue={setemail}
+          setgetEmailValidationStatus={setgetEmailValidationStatus}
+        />
+        <Userinput
+          Placeholder="Password"
+          isPass={true}
+          setstateValue={setpassword}
+        />
+      </View>
 
-              disabled={isApplying}
-      
-              onPress={HandleLogin}
-              
-              className="rounded-xl px-12  bg-primaryButton mt-2 flex items-center justify-center"
-            >
-              {isApplying ? (
-                <ActivityIndicator className="py-2" size="small" color="#ffffff" />
-              ) : (
-                <Text className="py-2 text-white text-xl font-semibold">Sign in</Text>
-              )}
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+      {/* Button */}
+      <Animated.View style={{ marginBottom: buttonMargin }} className="w-full mt-4">
+        <TouchableOpacity
+          disabled={isApplying}
+          onPress={HandleLogin}
+          className="rounded-xl bg-primaryButton py-3 items-center justify-center"
+        >
+          {isApplying ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <Text className="text-white text-xl font-semibold">
+              Sign in
+            </Text>
+          )}
+        </TouchableOpacity>
+      </Animated.View>
+
+    </View>
+  </TouchableWithoutFeedback>
+</KeyboardAvoidingView>
+
   );
 };
 
