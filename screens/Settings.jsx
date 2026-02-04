@@ -229,8 +229,10 @@ const Settings = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <SafeAreaView>
-        <ScrollView className="px-4">
+      <SafeAreaView edges={['top']}>
+        <ScrollView  contentContainerStyle={{ paddingBottom: 20 }}
+      showsVerticalScrollIndicator={false}
+       className="px-4">
 
           {/* Header */}
           <View className="flex-row justify-between pt-4">

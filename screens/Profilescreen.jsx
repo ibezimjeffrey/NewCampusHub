@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {, Dimensions 
+import { Dimensions,
   Text,
   View,
   TouchableOpacity,
@@ -10,7 +10,7 @@ import {, Dimensions
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-ts";
+import { Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 import * as ImagePicker from "expo-image-picker";
@@ -31,7 +31,7 @@ import {
 import { MaterialIcons, Entypo } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { Picker } from "@react-native-picker/picker";
-import { Dimensions } from "react-native";
+
 import FancyTextInput from "@/components/FancyTextInput";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import CustomPicker from "@/components/CustomPicker";
