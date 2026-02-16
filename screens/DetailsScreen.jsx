@@ -83,7 +83,7 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
 });
 
     } catch (err) {
-      alert("Error: " + err);
+
     }
   }
 
@@ -91,7 +91,11 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
     setIsApplying(true);
     try {
       await deleteDoc(doc(firestoreDB, 'postings', postIdToRemove));
-      alert('Post successfully removed');
+       Toast.show({
+              type: ALERT_TYPE.SUCCESS,
+              title: 'Post Removed',
+              textBody: 'The post has been successfully removed.',
+            });
       navigation.navigate("Homescreen");
     } catch (error) {
       console.error('Error removing document: ', error);
@@ -102,7 +106,11 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
     setIsApplying(true);
 
     if (!isProfileComplete ) {
-      alert('Please finish setting up your profile');
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: 'Incomplete Profile',
+        textBody: 'Please finish setting up your profile before applying.',
+      });
       setIsApplying(false);
       return;
     }
@@ -115,7 +123,11 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
     const querySnapshot = await getDocs(chatQuery);
     if (!querySnapshot.empty) {
       setIsApplying(false);
-      alert("You have already applied for this job.");
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: 'Already Applied',
+        textBody: 'You have already applied for this job.',
+      });
       return;
     }
 
@@ -140,7 +152,11 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
       othersideview();
     } catch (err) {
       setIsApplying(false);
-      alert("Error: " + err);
+      Toast.show({
+        type: ALERT_TYPE.ERROR,
+        title: 'Error',
+        textBody: 'Failed to create chat.',
+      });
     }
   };
 

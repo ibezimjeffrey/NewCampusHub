@@ -96,7 +96,7 @@ const CustomPicker = ({ label, value, options, onSelect }) => {
                       {item.label} {/* Display the label */}
                     </Text>
                     {selected && (
-                      <MaterialIcons name="check-circle" size={20} color="#4f46e5" />
+                      <MaterialIcons name="check-circle" size={20} color="#268290" />
                     )}
                   </TouchableOpacity>
                 );
@@ -157,14 +157,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selected: {
-    backgroundColor: "#eef2ff",
+    backgroundColor: "#26829020",
   },
   optionText: {
     fontSize: 15,
     color: "#222",
   },
   selectedText: {
-    color: "#4f46e5",
+    color: "#268290",
     fontWeight: "600",
   },
 });

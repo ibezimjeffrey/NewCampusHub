@@ -7,7 +7,7 @@ import { KeyboardAvoidingView } from 'react-native'
 import { ScrollView } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useSelector } from 'react-redux'
-import { addDoc, collection, onSnapshot, query } from 'firebase/firestore'
+import { addDoc, collection, doc, getDoc, onSnapshot, query, setDoc } from 'firebase/firestore'
 import { firestoreDB } from '../config/firebase.config'
 import { Picker } from '@react-native-picker/picker';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
@@ -32,6 +32,8 @@ const Postscreen = () => {
   const [value1, setvalue1] = useState(""); 
   const [otherJob, setotherJob] = useState("");
   const [statevalue1, setstatevalue1] = useState("")
+
+  const [Balance, setBalance] = useState(0)
   
   const [value2, setvalue2] = useState(""); 
   const [statevalue2, setstatevalue2] = useState("")
@@ -93,6 +95,21 @@ const locationOptions = [
 
   const [COSavailable, setCOSavailable] = useState(false)
   const [Aboutavailable, setAboutavailable] = useState(false)
+
+  useEffect(() => {
+      const fetchBalance = async () => {
+        const ref = doc(firestoreDB, 'Balance', user._id);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          setBalance(parseFloat(snap.data().Amount));
+        } else {
+          await setDoc(ref, { Amount: 0 });
+          setBalance(0);
+        }
+      };
+      fetchBalance();
+    }, [user._id]);
+
 
   useEffect(() => {
     const msgQuery = query(collection(firestoreDB, 'users', user._id, 'details'));
@@ -174,6 +191,19 @@ const locationOptions = [
                   title: 'Budget Too High',
                   textBody:'Budget has to be lower than N100,000',
                 });
+      setIsApplying(false);
+      return;
+    }
+
+    if (numericBudget> Balance) {
+
+       Toast.show({
+                  type: ALERT_TYPE.WARNING,
+                  title: 'Insufficient Balance',
+                  textBody:'You do not have enough balance to post this job',
+                });
+                
+
       setIsApplying(false);
       return;
     }

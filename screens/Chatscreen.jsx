@@ -11,6 +11,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 import { Dimensions, PixelRatio } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import axios from 'axios';
+import { PricingButton } from 'react-native-elements/dist/pricing/PricingCard';
 const { width } = Dimensions.get('window');
 
 const scaleFont = (baseFont) => {
@@ -255,7 +257,11 @@ const Chatscreen = ({ route }) => {
   const Employ = async () => {
 
     if (Balance < Price){
-      alert("Insufficient funds")
+       Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: 'Insufficient Funds',
+        textBody: 'You do not have enough funds to hire this freelancer.',
+      });
       return;
       
     }
@@ -313,6 +319,9 @@ const PAY = async () => {
       };
       await addDoc(collection(firestoreDB, 'Payments'), PaymentStatus);
 
+       const feeAmount = Math.round(Price * (7.5 / 100));
+       const User_Amount = Price - feeAmount;
+
       // USER DEBIT TRANSACTION
 await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   userId: user._id,
@@ -324,17 +333,28 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   createdAt: serverTimestamp()
 });
 
+
+await axios.post(
+     'https://ruachbackend.onrender.com/charges',
+        {
+          userId: user._id,
+          amount: feeAmount,
+          name: user.fullName,
+        },
+        { headers: { 'x-api-key': '3a7f9b2d-87f4-4c7a-b88d-9c63f07e6d12' } }
+      );
+
+
 // FREELANCER CREDIT TRANSACTION
 await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   userId: post.user._id,
   type: 'credit',
-  amount: Price,
+  amount: User_Amount,
   reason: `Payment from ${user.fullName}`,
   relatedPostId: post._id,
   relatedUserId: user._id,
   createdAt: serverTimestamp()
 });
-
 
 
       setIsHired(false)
@@ -346,7 +366,7 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
       const balanceDocRef = doc(firestoreDB, 'Balance', user._id);
       await setDoc(balanceDocRef, { Amount: newBalance }); // Store the new balance in Firestore
 
-      const charge =  FreelancerBalance + Price
+      const charge =  FreelancerBalance + User_Amount
       const balanceDocRef1 = doc(firestoreDB, 'Balance', post.user._id);
       await setDoc(balanceDocRef1, { Amount: charge }); // Store the new balance in Firestore
 
@@ -596,7 +616,7 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
     fontWeight: '600',               // equivalent to font-semibold
     color: '#fff',                   // keep white text
   }}
-  numberOfLines={1}                  // keeps it on a single line (optional)
+  numberOfLines={6}                  // keeps it on a single line (optional)
   adjustsFontSizeToFit={true}        // shrink font if it overflows
   minimumFontScale={0.7}             // shrink down to 70% of original size
 >
@@ -621,7 +641,7 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
     fontWeight: '600',               // equivalent to font-semibold
                       // keep white text
   }}
-  numberOfLines={1}                  // keeps it on a single line (optional)
+  numberOfLines={6}                  // keeps it on a single line (optional)
   adjustsFontSizeToFit={true}        // shrink font if it overflows
   minimumFontScale={0.7}             // shrink down to 70% of original size
 >
@@ -664,7 +684,7 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
                 <View className="bg-gray-200 rounded-2xl px-4 space-x-4 py-2 flex-row items-center justify-center">
                   
                   <TextInput
-                    className="flex-1 h-fit text-base text-primaryText font-semibold"
+                    className="flex-1 h-fit "
                     placeholder="Send a Chat "
                     placeholderTextColor="#999"
                     value={message}
