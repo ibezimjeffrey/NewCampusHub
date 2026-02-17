@@ -227,22 +227,34 @@ const ViewProfilescreen = ({ route }) => {
        <Text className="mt-5 font-semibold">Skills</Text>
 
         
-          <View className="mt-4" style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                       {details.length > 0 && typeof details[0].Skills === 'string' && details[0].Skills.length > 0 && (
-                         details[0].Skills.split(', ').map((skill, index) => (
-                           
-                           <View key={index} >
-         
-         
-                          
-                
-                                 <View style={{ borderColor: "#268290", borderWidth: 1, borderRadius: 20, padding: 8, margin: 4 }}>
-                                    <Text className="capitalize">{skill}</Text>
-                                </View>
-                
-  </View>
-))
-                        )}          </View> 
+       <View className="mt-4" style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+  {details.length > 0 &&
+  typeof details[0].Skills === 'string' &&
+  details[0].Skills.trim().length > 0 ? (
+    details[0].Skills.split(',').map((skill, index) => (
+      <View key={index}>
+        <View
+          style={{
+            borderColor: "#268290",
+            borderWidth: 1,
+            borderRadius: 20,
+            padding: 8,
+            margin: 4,
+          }}
+        >
+          <Text className="capitalize">{skill.trim()}</Text>
+        </View>
+      </View>
+    ))
+  ) : (
+    <View className='right-5 w-full justify-center items-center'>
+      <Text>No skills</Text>
+      </View>
+
+    
+  )}
+</View>
+
 
              <View
   style={{

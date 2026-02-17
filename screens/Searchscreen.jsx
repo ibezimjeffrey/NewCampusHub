@@ -11,6 +11,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const { width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
+
 const scaleFont = (baseFont) => {
   if (width <= 320) return baseFont * 0.8;   // very small phones
   if (width <= 375) return baseFont * 0.9;   // small phones
@@ -115,7 +117,7 @@ const Searchscreen = () => {
         </View>
 
         {searchPerformed && !isLoading && searchResults.length === 0 && (
-          <View style={{top:300, left:150}} >
+          <View style={{top:height/2 - 100, position: "absolute", left:width/2 - 100}} >
             <Text className="italic font-extralight">No jobs available</Text>
           </View>
         )}

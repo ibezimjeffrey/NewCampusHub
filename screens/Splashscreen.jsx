@@ -1,6 +1,6 @@
 import { View, Text, ActivityIndicator, Image, Alert } from 'react-native';
 import React, { useLayoutEffect } from 'react';
-import { Logo } from '../assets';
+import { NEW_LOGO} from '../assets';
 import { firebaseAuth, firestoreDB } from '../config/firebase.config';
 import { useNavigation } from '@react-navigation/native';
 import { doc, getDoc } from 'firebase/firestore';
@@ -39,7 +39,7 @@ const Splashscreen = () => {
             
             else {
                 setTimeout(() => {
-                    navigation.replace("Loginscreen");
+                    navigation.replace("LandingPage");
                 }, 2000);
             }
         });
@@ -47,7 +47,7 @@ const Splashscreen = () => {
 
     return (
         <View className="flex-1 bg-white items-center justify-center space-y-24">
-            <Image source={Logo} className="w-24 h-24" resizeMode="contain" />
+            <Image source={NEW_LOGO} className="w-24 h-24" resizeMode="contain" />
             <ActivityIndicator size={"large"} color={"#268290"} />
         </View>
     );

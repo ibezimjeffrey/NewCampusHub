@@ -11,6 +11,7 @@ import { StyleSheet } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Dimensions } from 'react-native';
+import { NEW_LOGO } from '@/assets';
 
 
 const { width } = Dimensions.get('window');
@@ -21,6 +22,13 @@ const scaleFont = (baseFont) => {
 };
 
 const ClientHomescreen = () => {
+
+
+
+
+
+
+  
   const user = useSelector((state) => state.user.user);
   const navigate = useNavigation();
 
@@ -163,6 +171,11 @@ const msgQuery = query(
       showsVerticalScrollIndicator={false}
       
     >
+<View className='items-center mb-5'>
+ <Image source={NEW_LOGO} className="w-24 h-24" resizeMode="contain" />
+
+</View>
+     
           <View>
   <Text style={{ color: '#000', fontSize: scaleFont(18), fontWeight: '300' }}>
     {greeting}

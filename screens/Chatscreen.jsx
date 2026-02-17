@@ -472,8 +472,9 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   adjustsFontSizeToFit={true}
   minimumFontScale={0.7}
 >
-  PAY
+  PAY 
 </Text>
+<Text>₦{post.price}</Text>
 
       </View>
     </View>
@@ -684,14 +685,15 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
                 <View className="bg-gray-200 rounded-2xl px-4 space-x-4 py-2 flex-row items-center justify-center">
                   
                   <TextInput
-                    className="flex-1 h-fit "
-                    placeholder="Send a Chat "
+                    className="flex-1 pb-1 pt-1"
+                    placeholder="Send a Chat"
+                    
                     placeholderTextColor="#999"
                     value={message}
                     onChangeText={(text) => { setMessage(text) }}
                   />
                   <TouchableOpacity onPress={pickImage}>
-                    <Entypo name="camera" size={24} color="black" />
+                    <Entypo name="folder-images"size={24} color="black" />
                   </TouchableOpacity>
                 </View>
                 <TouchableOpacity className="pl-4" onPress={sendMessage}>

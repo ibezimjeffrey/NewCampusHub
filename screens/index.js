@@ -1,7 +1,7 @@
 
 
 export { default as Homescreen} from "./Homescreen";
-
+export { default as LandingPage} from "./LandingPage";
 export { default as Loginscreen} from "./Loginscreen";
 export { default as Signupscreen} from "./Signupscreen";
 export { default as Splashscreen} from "./Splashscreen";

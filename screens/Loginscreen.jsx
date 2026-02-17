@@ -11,7 +11,7 @@ import {
   Animated
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import { Logo } from '../assets';
+import { NEW_LOGO } from '../assets';
 import { Userinput } from '../components';
 import { useNavigation } from '@react-navigation/native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -20,6 +20,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useDispatch } from 'react-redux';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 import { SET_USER } from '../context/actions/userActions';
+import LoadingOverlay from './LoadingOverlay';
 
 const Loginscreen = () => {
   const [isApplying, setIsApplying] = useState(false);
@@ -127,26 +128,16 @@ const Loginscreen = () => {
 
       {/* Logo */}
       <Image
-        source={Logo}
-        className="w-16 h-16 mb-8"
+        source={NEW_LOGO}
+        className="w-40 h-40 mb-6"
         resizeMode="contain"
       />
 
       {/* Create account row */}
-      <View className="flex-row justify-center items-center mb-6 space-x-2">
-        <Text className="text-base font-thin text-primaryText">
-        
-        </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Signupscreen")}>
-          <Text className="text-base font-semibold text-primaryButton">
-            Create Account
-          </Text>
-        </TouchableOpacity>
-      </View>
+     
 
       {/* Divider */}
-      <Text className="text-base font-extralight mb-2">Or</Text>
-      <Text className="text-lg font-bold mb-4">Sign in</Text>
+      
 
       {/* Alert */}
       {alert && (
@@ -177,15 +168,39 @@ const Loginscreen = () => {
           onPress={HandleLogin}
           className="rounded-xl bg-primaryButton py-3 items-center justify-center"
         >
-          {isApplying ? (
-            <ActivityIndicator size="small" color="#ffffff" />
-          ) : (
+          
             <Text className="text-white text-xl font-semibold">
               Sign in
             </Text>
+        
+        </TouchableOpacity>
+
+        
+
+
+      </Animated.View>
+      <Text className="text-base font-extralight mb-2">Don't have an account?</Text>
+    
+{isApplying ? (
+            <LoadingOverlay visible={true} />
+          ) : (
+            ""
           )}
+
+      <Animated.View style={{ marginBottom: buttonMargin }} className="w-full mt-4">
+        <TouchableOpacity
+          disabled={isApplying}
+         onPress={() => navigation.navigate("Signupscreen")}
+          className="rounded-xl bg-white py-3 border border-primaryButton items-center justify-center"
+        >
+         
+            <Text className="text-primaryButton text-xl font-semibold">
+              Register
+            </Text>
+         
         </TouchableOpacity>
       </Animated.View>
+
 
     </View>
   </TouchableWithoutFeedback>

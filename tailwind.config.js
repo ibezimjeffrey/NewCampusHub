@@ -18,6 +18,15 @@ module.exports = {
 
     },
   },
-  plugins: [],
+  plugins: [
+
+    [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ]
+  ],
 }
 

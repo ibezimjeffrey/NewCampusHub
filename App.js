@@ -7,7 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from 'react-redux';
 import "react-native-reanimated"
 const Stack = createNativeStackNavigator();
-import {AllPostsscreen,ViewProfilescreen, Aboutscreen, AddTochatscreen, Chatscreen, DetailsScreen, Homescreen, Messagescreen, Postscreen, Searchscreen, Splashscreen, Settingsscreen } from './screens';
+import {AllPostsscreen,ViewProfilescreen, Aboutscreen, AddTochatscreen, Chatscreen, DetailsScreen, Homescreen, Messagescreen, Postscreen, Searchscreen, Splashscreen, Settingsscreen, LandingPage } from './screens';
 import { Loginscreen } from './screens';
 import { Signupscreen } from './screens';
 import Store from './context/store';
@@ -30,6 +30,7 @@ export default function App() {
 
             
           <Stack.Screen name="Splashscreen" options={{ gestureEnabled: false }} component={Splashscreen} />
+           <Stack.Screen name="LandingPage" options={{ gestureEnabled: false }} component={LandingPage} />
           <Stack.Screen name="Signupscreen" options={{ gestureEnabled: false }} component={Signupscreen} />
           <Stack.Screen name="Loginscreen" options={{ gestureEnabled: false }} component={Loginscreen} />
           <Stack.Screen name="Aboutscreen" options={{ gestureEnabled: false }} component={Aboutscreen} />

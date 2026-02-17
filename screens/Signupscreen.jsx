@@ -14,6 +14,7 @@ import {sendEmailVerification} from 'firebase/auth';
 import { StyleSheet } from "react-native";
 import { FlatList } from "react-native";
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
+import LoadingOverlay from './LoadingOverlay';
 
 
 const Signupscreen = () => {
@@ -240,19 +241,34 @@ const ITEM_SIZE = screenwidth / NUM_COLUMNS - 24;
               />
               {password !== "" && passwordStrength && <Text>Password Strength: {passwordStrength}</Text>}
               <TouchableOpacity disabled={isApplying} onPress={handleSignup}
-               className="rounded-xl px-12  bg-primaryButton mt-2 flex items-center justify-center">
-                {isApplying ? (
-            <ActivityIndicator className="py-3" size="small" color="#ffffff" />
-          ) : (
+               className="rounded-xl px-12  bg-primaryButton mt-2 flex items-center w-full justify-center">
+               
             <Text className='py-2 text-white text-xl font-semibold'>Next</Text>
-          )}
+        
               </TouchableOpacity>
               <View className="w-full flex-row py-2 justify-center space-x-2">
                 <Text className="text-base font-thin text-primaryText">Have an Account?</Text>
               </View>
-              <TouchableOpacity onPress={() => navigation.navigate("Loginscreen")}>
-                <Text className="text-base font-semibold text-primaryButton">Login here</Text>
-              </TouchableOpacity>
+                 
+{isApplying ? (
+            <LoadingOverlay visible={true} />
+          ) : (
+            ""
+          )}
+
+                <View  className="w-full mt-4">
+                      <TouchableOpacity
+                        disabled={isApplying}
+                       onPress={() => navigation.navigate("Loginscreen")}
+                        className="rounded-xl bg-white py-3 border border-primaryButton items-center justify-center"
+                      >
+                      
+                          <Text className="text-primaryButton text-xl font-semibold">
+                            Login
+                          </Text>
+                       
+                      </TouchableOpacity>
+                    </View>
             </View>
           </View>
         </ScrollView>

@@ -159,6 +159,7 @@ const Settings = () => {
       });
       return;
     }
+    
 
     try {
       setIsWithdrawing(true);
@@ -240,13 +241,17 @@ const Settings = () => {
               <MaterialIcons name="chevron-left" size={32} color="#268290" />
             </TouchableOpacity>
             <TouchableOpacity onPress={logout}>
-              {isApplying ? (
-                <ActivityIndicator color="#268290" />
-              ) : (
+             
                 <Text className="text-[#268290] font-bold">Logout</Text>
-              )}
+             
             </TouchableOpacity>
           </View>
+
+           {isApplying ? (
+                <LoadingOverlay visible={true} />
+              ) : (
+                ""
+              )}
 
           {/* Balance */}
           <View className="items-center mt-10">
@@ -357,6 +362,13 @@ const Settings = () => {
                 </Text>
               </TouchableOpacity>
 
+              {isWithdrawing ? (
+        <LoadingOverlay visible={true} />
+        
+        ) : (
+          ""
+        )}
+
               <TouchableOpacity onPress={cancelWithdraw} className="mt-5 items-center">
                 <Text className="text-gray-600 text-base">Cancel</Text>
               </TouchableOpacity>
@@ -464,6 +476,7 @@ const Settings = () => {
             setNumber(0);
           }}
           autoStart
+          activityIndicatorColor=""
         />
       )}
 
