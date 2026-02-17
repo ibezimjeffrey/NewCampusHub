@@ -32,6 +32,7 @@ import axios from 'axios';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 import LoadingOverlay from './LoadingOverlay';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AppText from '@/components/AppText';
 
 const Settings = () => {
   const user = useSelector((state) => state.user.user);
@@ -242,7 +243,7 @@ const Settings = () => {
             </TouchableOpacity>
             <TouchableOpacity onPress={logout}>
              
-                <Text className="text-[#268290] font-bold">Logout</Text>
+                <AppText className="text-[#268290] font-bold">Logout</AppText>
              
             </TouchableOpacity>
           </View>
@@ -255,10 +256,10 @@ const Settings = () => {
 
           {/* Balance */}
           <View className="items-center mt-10">
-            <Text className="text-4xl font-bold">
+            <AppText className="text-4xl font-bold">
               ₦{Balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </Text>
-            <Text className="text-gray-500 mt-1">Available Balance</Text>
+            </AppText>
+            <AppText className="text-gray-500 mt-1">Available Balance</AppText>
           </View>
 
           {/* Deposit / Withdraw Buttons */}
@@ -268,14 +269,14 @@ const Settings = () => {
                 <View className="w-14 h-14 border border-[#268290] rounded-full items-center justify-center">
                   <MaterialIcons name="add" size={28} color="#268290" />
                 </View>
-                <Text className="mt-2 font-medium">Deposit</Text>
+                <AppText className="mt-2 font-medium">Deposit</AppText>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={openWithdraw} className="items-center">
                 <View className="w-14 h-14 border border-[#268290] rounded-full items-center justify-center">
                   <MaterialIcons name="arrow-downward" size={28} color="#268290" />
                 </View>
-                <Text className="mt-2 font-medium">Withdraw</Text>
+                <AppText className="mt-2 font-medium">Withdraw</AppText>
               </TouchableOpacity>
             </View>
           </View>
@@ -284,27 +285,27 @@ const Settings = () => {
 
           {/* Transactions */}
           <View className="mt-12">
-            <Text className="text-xl font-bold mb-4">Recent Transactions</Text>
+            <AppText className="text-xl font-bold mb-4">Recent Transactions</AppText>
             {transactions.length === 0 ? (
-              <Text className="text-center text-gray-500">No transactions yet</Text>
+              <AppText className="text-center text-gray-500">No transactions yet</AppText>
             ) : (
               transactions.map((tx) => (
                 <View key={tx.id} className="flex-row justify-between py-4 border-b border-gray-200">
                   <View>
-                    <Text className="font-medium">{tx.reason}</Text>
-                    <Text className="text-xs text-gray-500">
+                    <AppText className="font-medium">{tx.reason}</AppText>
+                    <AppText className="text-xs text-gray-500">
                       {tx.createdAt?.seconds
                         ? new Date(tx.createdAt.seconds * 1000).toLocaleDateString()
                         : 'Just now'}
-                    </Text>
+                    </AppText>
                   </View>
-                  <Text
+                  <AppText
                     className={`font-bold ${
                       tx.type === 'credit' ? 'text-green-600' : 'text-red-600'
                     }`}
                   >
                     {tx.type === 'credit' ? '+' : '-'}₦{tx.amount.toLocaleString()}
-                  </Text>
+                  </AppText>
                 </View>
               ))
             )}
@@ -329,15 +330,15 @@ const Settings = () => {
             {/* Header */}
             <View className="items-center py-8">
 
-              <Text className="text-6xl mt-6">💰</Text>
+              <AppText className="text-6xl mt-6">💰</AppText>
             </View>
 
             {/* Input Section */}
             <View className="bg-white rounded-t-3xl px-6 pt-10 pb-12">
-              <Text className="text-lg text-center text-gray-800 mb-6">Enter Amount to Withdraw</Text>
+              <AppText className="text-lg text-center text-gray-800 mb-6">Enter Amount to Withdraw</AppText>
 
               <View className="flex-row items-center bg-gray-100 rounded-2xl px-6 h-20">
-                <Text className="text-4xl font-bold mr-3">₦</Text>
+                <AppText className="text-4xl font-bold mr-3">₦</AppText>
                 <TextInput
                   className="flex-1 text-4xl font-bold text-black pt-1"
                   keyboardType="numeric"
@@ -347,9 +348,9 @@ const Settings = () => {
                 />
               </View>
 
-              <Text className="text-center text-gray-500 mt-6">
+              <AppText className="text-center text-gray-500 mt-6">
                 Funds will be sent to your linked bank account
-              </Text>
+              </AppText>
 
               {/* Buttons */}
               <TouchableOpacity
@@ -357,9 +358,9 @@ const Settings = () => {
                 disabled={isWithdrawing || withdrawNumber === 0}
                 className="mt-10 bg-black rounded-full py-5 items-center"
               >
-                <Text className="text-white text-lg font-bold">
+                <AppText className="text-white text-lg font-bold">
                   {isWithdrawing ? 'Processing...' : 'Continue'}
-                </Text>
+                </AppText>
               </TouchableOpacity>
 
               {isWithdrawing ? (
@@ -370,7 +371,7 @@ const Settings = () => {
         )}
 
               <TouchableOpacity onPress={cancelWithdraw} className="mt-5 items-center">
-                <Text className="text-gray-600 text-base">Cancel</Text>
+                <AppText className="text-gray-600 text-base">Cancel</AppText>
               </TouchableOpacity>
             </View>
           </View>
@@ -401,15 +402,15 @@ const Settings = () => {
             {/* Header */}
             <View className="items-center py-8">
 
-              <Text className="text-6xl mt-6">💰</Text>
+              <AppText className="text-6xl mt-6">💰</AppText>
             </View>
 
             {/* Input Section */}
             <View className="bg-white rounded-t-3xl px-6 pt-10 pb-12">
-              <Text className="text-lg text-center text-gray-800 mb-6">Enter Amount to Deposit</Text>
+              <AppText className="text-lg text-center text-gray-800 mb-6">Enter Amount to Deposit</AppText>
 
               <View className="flex-row items-center bg-gray-100 rounded-2xl px-6 h-20">
-                <Text className="text-4xl font-bold mr-3">₦</Text>
+                <AppText className="text-4xl font-bold mr-3">₦</AppText>
                 <TextInput
                   className="flex-1 text-4xl font-bold text-black pt-1"
                   keyboardType="numeric"
@@ -419,9 +420,9 @@ const Settings = () => {
                 />
               </View>
 
-              <Text className="text-center text-gray-500 mt-6">
+              <AppText className="text-center text-gray-500 mt-6">
                 Funds will be deposited from your bank account
-              </Text>
+              </AppText>
 
               {/* Buttons */}
               <TouchableOpacity
@@ -433,13 +434,13 @@ const Settings = () => {
 
                 className="mt-10 bg-black rounded-full py-5 items-center"
               >
-                <Text className="text-white text-lg font-bold">
+                <AppText className="text-white text-lg font-bold">
                   {!add ? 'Processing...' : 'Continue'}
-                </Text>
+                </AppText>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={cancelAdd} className="mt-5 items-center">
-                <Text className="text-gray-600 text-base">Cancel</Text>
+                <AppText className="text-gray-600 text-base">Cancel</AppText>
               </TouchableOpacity>
             </View>
           </View>

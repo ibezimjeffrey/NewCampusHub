@@ -35,6 +35,7 @@ import { Picker } from "@react-native-picker/picker";
 import FancyTextInput from "@/components/FancyTextInput";
 import { ALERT_TYPE, Toast } from "react-native-alert-notification";
 import CustomPicker from "@/components/CustomPicker";
+import AppText from "@/components/AppText";
 
 const { width } = Dimensions.get("window");
 const scaleFont = (baseFont) => {
@@ -672,7 +673,7 @@ const Profilescreen = () => {
               className="w-12 h-12 relative top-2"
               style={{ alignSelf: "flex-end" }}
             />
-            <Text
+            <AppText
               style={{
                 color: "#6b7280", // gray-500
                 fontSize: scaleFont(16), // was text-xl
@@ -686,13 +687,13 @@ const Profilescreen = () => {
               minimumFontScale={0.75}
             >
               {post.Location}
-            </Text>
+            </AppText>
 
-            <Text
+            <AppText
               style={{
                 color: "#000",
                 fontSize: 20, // was text-2xl
-                fontWeight: "200",
+              
                 padding: 8,
                 textTransform: "capitalize",
                 position: "absolute",
@@ -703,7 +704,7 @@ const Profilescreen = () => {
               minimumFontScale={0.7}
             >
               {post.JobDetails}
-            </Text>
+            </AppText>
 
             <View style={{ flex: 1, justifyContent: "flex-end" }}>
               <View
@@ -713,22 +714,22 @@ const Profilescreen = () => {
                   alignItems: "flex-end",
                 }}
               >
-                <Text
+                <AppText
                   style={{
                     color: "#268290",
-                    fontWeight: "300",
+                   
                     fontSize: scaleFont(16),
                     flexShrink: 1, // allows shrinking on small screens
                   }}
                   numberOfLines={1} // prevents wrapping
                 >
                   {post.DisplayTime}
-                </Text>
+                </AppText>
 
-                <Text
+                <AppText
                   style={{
                     color: "#000",
-                    fontWeight: "300",
+                   
                     fontSize: scaleFont(14),
                     flexShrink: 1, // allows shrinking
                     textAlign: "right",
@@ -736,7 +737,7 @@ const Profilescreen = () => {
                   numberOfLines={1}
                 >
                   Fixed Price / ₦{post.Budget}
-                </Text>
+                </AppText>
               </View>
             </View>
           </View>
@@ -746,11 +747,16 @@ const Profilescreen = () => {
   };
 
   return (
+      
     <SafeAreaView edges={["top"]} className="flex-1">
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <ScrollView className="p-4">
+         <ScrollView
+            contentContainerStyle={{ padding: 20 }}
+              showsVerticalScrollIndicator={false}
+              
+            >
           <View className="w-full flex-row justify-between">
             <View
               className=""
@@ -796,21 +802,21 @@ const Profilescreen = () => {
                   />
                 </View>
 
-                <Text className="text-2xl font-bold pt-4">{user.fullName}</Text>
-                <Text className="text-base font-bold text-gray-500">
+                <AppText className="text-2xl font-bold pt-4">{user.fullName}</AppText>
+                <AppText className="text-base font-bold text-gray-500">
                   {user.email}
-                </Text>
+                </AppText>
               </View>
 
               <View className="mt-5 mb-4">
                 <View className="flex-row justify-between mt-4">
                   <View className="items-center">
-                    <Text className="text-2xl">{jobCount}</Text>
-                    <Text className="text-gray-500">Jobs posted</Text>
+                    <AppText className="text-2xl">{jobCount}</AppText>
+                    <AppText className="text-gray-500">Jobs posted</AppText>
                   </View>
                   <View className="items-center">
-                    <Text className="text-2xl">{allHires}</Text>
-                    <Text className="text-gray-500">Hires</Text>
+                    <AppText className="text-2xl">{allHires}</AppText>
+                    <AppText className="text-gray-500">Hires</AppText>
                   </View>
                 </View>
               </View>
@@ -832,25 +838,25 @@ const Profilescreen = () => {
                     />
 
                     {/* Header */}
-                    <Text
+                    <AppText
                       style={{
                         fontSize: 12,
                         letterSpacing: 2,
                         color: "#268290",
-                        fontWeight: "600",
+                       
                         marginBottom: 10,
                         marginLeft: 8,
                       }}
                     >
                       COURSE OF STUDY
-                    </Text>
+                    </AppText>
 
                     {/* Value */}
-                    <Text
+                    <AppText
                       style={{
                         fontSize: 16,
                         color: "#111",
-                        fontWeight: "400",
+                       
                         marginLeft: 8,
                         textTransform: "capitalize",
                       }}
@@ -858,7 +864,7 @@ const Profilescreen = () => {
                       {details.length > 0 && details[0].Hostel
                         ? details[0].Hostel
                         : "Not specified"}
-                    </Text>
+                    </AppText>
                   </View>
                 </View>
 
@@ -992,18 +998,18 @@ const Profilescreen = () => {
 
                     {/* Header */}
                     <View className="flex-row items-center justify-between mb-2">
-                      <Text
+                      <AppText
                         style={{
                           fontSize: 12,
                           letterSpacing: 2,
                           color: "#268290",
-                          fontWeight: "600",
+                          
                           marginBottom: 12,
                           marginLeft: 8,
                         }}
                       >
                         ABOUT ME
-                      </Text>
+                      </AppText>
                       {!Edit ? (
                         <TouchableOpacity
                           className=" w-6 h-6 bg-primaryButton rounded-full flex items-center justify-center"
@@ -1024,19 +1030,19 @@ const Profilescreen = () => {
 
                     {/* Content */}
                     {details.length > 0 && details[0].About ? (
-                      <Text
+                      <AppText
                         style={{
                           fontSize: 16,
                           lineHeight: 24,
                           color: "#111",
-                          fontWeight: "300",
+                          
                           marginLeft: 8,
                         }}
                       >
                         {details[0].About}
-                      </Text>
+                      </AppText>
                     ) : (
-                      <Text
+                      <AppText
                         style={{
                           fontSize: 14,
                           fontStyle: "italic",
@@ -1045,7 +1051,7 @@ const Profilescreen = () => {
                         }}
                       >
                         No bio yet — this is where personality lives.
-                      </Text>
+                      </AppText>
                     )}
                   </View>
                 )}
@@ -1061,7 +1067,7 @@ const Profilescreen = () => {
               />
 
               <View className="w-full flex-row items-center ">
-                <Text className="mt-5 font-semibold">Skills</Text>
+                <AppText className="mt-5 font-semibold">Skills</AppText>
                 <TouchableOpacity onPress={setSkills}>
                   <View className="w-6 h-6 top-2 left-2 bg-primaryButton rounded-full flex items-center justify-center">
                     <MaterialIcons name="add" size={16} color={"#fff"} />
@@ -1102,7 +1108,7 @@ const Profilescreen = () => {
                             margin: 4,
                           }}
                         >
-                          <Text className="capitalize">{skill}</Text>
+                          <AppText className="capitalize">{skill}</AppText>
                         </View>
                       </View>
                     ))}
@@ -1154,7 +1160,7 @@ const Profilescreen = () => {
               />
 
               <View className="w-full flex-row items-center ">
-                <Text className="mt-5 font-semibold">Portfolio</Text>
+                <AppText className="mt-5 font-semibold">Portfolio</AppText>
                 <TouchableOpacity onPress={pickImage}>
                   <View className="left-2 top-2 w-6 h-6 bg-primaryButton rounded-full flex items-center justify-center">
                     <MaterialIcons name="add" size={16} color={"#fff"} />
@@ -1252,16 +1258,17 @@ const Profilescreen = () => {
                     !(details[0].images && details[0].images.length > 0)) &&
                   portfolioImages.length === 0 ? (
                     <View className="right-5 w-full justify-center items-center">
-                      <Text className="italic font-extralight">
+                      <AppText className="italic font-extralight">
                         Nothing on portfolio
-                      </Text>
+                      </AppText>
                     </View>
                   ) : null}
                 </View>
               )}
 
-              <View className="mt-4">
-                <Text className="font-semibold">My Posts</Text>
+<AppText className="mt-4 font-semibold">My Posts</AppText>
+              <View className="mt-4 items-center justify-center flex-row flex-wrap">
+                
                 {postsLoading ? (
                   <ActivityIndicator size="large" color="#268290" />
                 ) : (
@@ -1272,9 +1279,9 @@ const Profilescreen = () => {
                       ))
                     ) : (
                       <View className=" w-full justify-center items-center">
-                        <Text className="italic font-extralight">
+                        <AppText className="italic font-extralight">
                           No jobs posted
-                        </Text>
+                        </AppText>
                       </View>
                     )}
                   </View>
@@ -1285,6 +1292,7 @@ const Profilescreen = () => {
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
+   
   );
 };
 

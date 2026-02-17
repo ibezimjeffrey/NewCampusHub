@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Image, SafeAreaView, TouchableOpacity, View, Text, ActivityIndicator } from 'react-native';
+import { Image, TouchableOpacity, View, Text, ActivityIndicator, ScrollView } from 'react-native';
 import { deleteDoc, doc, setDoc, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { firestoreDB } from '../config/firebase.config';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
+import AppText from '@/components/AppText';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DetailsScreen = ({ route }) => {
   const { post } = route.params;
@@ -166,66 +168,101 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-row items-center justify-center mt-10">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="absolute left-4">
-          <MaterialIcons name='chevron-left' size={32} color={"#000"} />
-        </TouchableOpacity>
-        <Text className="text-2xl font-light">Job Details</Text>
-      </View>
-
-      <View className="items-center mt-5">
-        <Image style={{borderColor:"#268290"}} source={{ uri: post.User.profilePic }} resizeMode="cover" className="w-40 h-40 rounded-full border-2 " />
-        <Text className="text-xl font-extralight mt-2">{post.User.fullName}</Text>
-      </View>
-
-      <View className="px-4 mt-5">
-        <Text className="text-2xl text-gray-500 capitalize">{post.JobDetails}</Text>
-        <Text className="text-base font-light mt-2">{post.Description}</Text>
-      </View>
-
-      <View className="flex-row justify-around mt-5">
-        <View className="flex items-center">
-          <MaterialIcons name='location-on' size={24} color={"#268290"} />
-          <Text className="text-base text-primaryButton mt-1">{post.Location}</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fdfdfd' }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+        {/* Header */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 15 }}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }}>
+            <MaterialIcons name='chevron-left' size={32} color="#000" />
+          </TouchableOpacity>
+          <AppText style={{ fontSize: 24, fontWeight: '700', color: '#000' }}>Job Details</AppText>
         </View>
-        <View className="flex items-center">
-          <MaterialIcons name='calendar-month' size={24} color={"#268290"} />
-          <Text className="text-base text-primaryButton mt-1">{post.DisplayTime}</Text>
-        </View>
-        <View className="flex items-center">
-          <Text className="" style={{fontSize:24, color:"#268290"}}>₦</Text>
-          <Text className="text-base text-primaryButton">{formatBudget(post.Budget)}</Text>
-        </View>
-      </View>
 
-      {!isUserPosted ? (
-        hasApplied ? (
-          <View className="bg-gray-300 py-3 rounded-lg mt-5 mx-4 items-center">
-            <Text className="text-white font-bold">Already Applied</Text>
+        {/* Profile */}
+        <View style={{ alignItems: 'center', marginTop: 20 }}>
+          <Image source={{ uri: post.User.profilePic }} resizeMode="cover" style={{ width: 160, height: 160, borderRadius: 80, borderWidth: 3, borderColor: '#268290' }} />
+          <AppText style={{ fontSize: 20, fontWeight: '600', marginTop: 12, color: '#111' }}>{post.User.fullName}</AppText>
+        </View>
+
+        {/* Job Info Card */}
+        <View style={{ margin: 20, padding: 20, backgroundColor: '#fff', borderRadius: 20, shadowColor: '#000', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 8 }, shadowRadius: 15, elevation: 5 }}>
+          <AppText style={{ fontSize: 22, fontWeight: '600', color: '#268290', marginBottom: 8 }}>{post.JobDetails}</AppText>
+          <AppText style={{ fontSize: 16, color: '#555', lineHeight: 24 }}>{post.Description}</AppText>
+
+          {/* Stats */}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 20 }}>
+            <View style={{ alignItems: 'center' }}>
+              <MaterialIcons name='location-on' size={26} color="#268290" />
+              <AppText style={{ fontSize: 14, fontWeight: '500', color: '#268290', marginTop: 4 }}>{post.Location}</AppText>
+            </View>
+            <View style={{ alignItems: 'center' }}>
+              <MaterialIcons name='calendar-month' size={26} color="#268290" />
+              <AppText style={{ fontSize: 14, fontWeight: '500', color: '#268290', marginTop: 4 }}>{post.DisplayTime}</AppText>
+            </View>
+            <View style={{ alignItems: 'center' }}>
+              <AppText style={{ fontSize: 24, fontWeight: '700', color: '#268290' }}>₦</AppText>
+              <AppText style={{ fontSize: 14, fontWeight: '500', color: '#268290', marginTop: 4 }}>{formatBudget(post.Budget)}</AppText>
+            </View>
           </View>
+        </View>
+
+        {/* Action Button */}
+        {!isUserPosted ? (
+          hasApplied ? (
+            <View style={{ marginHorizontal: 20, marginTop: 20, backgroundColor: '#d1d5db', paddingVertical: 14, borderRadius: 16, alignItems: 'center' }}>
+              <AppText style={{ fontSize: 16, fontWeight: '700', color: '#fff' }}>Already Applied</AppText>
+            </View>
+          ) : (
+            <TouchableOpacity
+              disabled={isApplying}
+              onPress={createNewChat}
+              style={{
+                marginHorizontal: 20,
+                marginTop: 20,
+                backgroundColor: '#268290',
+                paddingVertical: 16,
+                borderRadius: 20,
+                alignItems: 'center',
+                shadowColor: '#268290',
+                shadowOpacity: 0.4,
+                shadowOffset: { width: 0, height: 8 },
+                shadowRadius: 15,
+                elevation: 8,
+              }}
+            >
+              {isApplying ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <AppText style={{ fontSize: 16, fontWeight: '700', color: '#fff' }}>Apply Now</AppText>
+              )}
+            </TouchableOpacity>
+          )
         ) : (
           <TouchableOpacity
-          disabled={isApplying}
-           className="bg-primaryButton py-3 rounded-lg mt-5 mx-4 items-center" onPress={createNewChat}>
+            disabled={isApplying}
+            onPress={() => removePost(post.id)}
+            style={{
+              marginHorizontal: 20,
+              marginTop: 20,
+              backgroundColor: '#ef4444',
+              paddingVertical: 16,
+              borderRadius: 20,
+              alignItems: 'center',
+              shadowColor: '#ef4444',
+              shadowOpacity: 0.4,
+              shadowOffset: { width: 0, height: 8 },
+              shadowRadius: 15,
+              elevation: 8,
+            }}
+          >
             {isApplying ? (
-              <ActivityIndicator size="small" color="#ffffff" />
+              <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text className="text-white font-bold">Apply Now</Text>
+              <AppText style={{ fontSize: 16, fontWeight: '700', color: '#fff' }}>Remove Job</AppText>
             )}
           </TouchableOpacity>
-        )
-      ) : (
-        <TouchableOpacity
-        disabled={isApplying}
-         className="bg-red-500 py-3 rounded-2xl mt-5 mx-4 items-center" onPress={() => removePost(post.id)}>
-          {isApplying ? (
-            <ActivityIndicator size="small" color="#ffffff" />
-          ) : (
-            <Text className="text-white font-bold">Remove Job</Text>
-          )}
-        </TouchableOpacity>
-      )}
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };

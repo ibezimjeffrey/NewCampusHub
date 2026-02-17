@@ -21,6 +21,7 @@ import { useDispatch } from 'react-redux';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 import { SET_USER } from '../context/actions/userActions';
 import LoadingOverlay from './LoadingOverlay';
+import AppText from '@/components/AppText';
 
 const Loginscreen = () => {
   const [isApplying, setIsApplying] = useState(false);
@@ -141,9 +142,9 @@ const Loginscreen = () => {
 
       {/* Alert */}
       {alert && (
-        <Text className="text-base text-red-500 mb-2">
+        <AppText className="text-base text-red-500 mb-2">
           {alertMessage}
-        </Text>
+        </AppText>
       )}
 
       {/* Inputs */}
@@ -169,9 +170,9 @@ const Loginscreen = () => {
           className="rounded-xl bg-primaryButton py-3 items-center justify-center"
         >
           
-            <Text className="text-white text-xl font-semibold">
+            <AppText className="text-white text-xl font-semibold">
               Sign in
-            </Text>
+            </AppText>
         
         </TouchableOpacity>
 
@@ -179,7 +180,7 @@ const Loginscreen = () => {
 
 
       </Animated.View>
-      <Text className="text-base font-extralight mb-2">Don't have an account?</Text>
+      <AppText className="text-base font-inter mb-2">Don't have an account?</AppText>
     
 {isApplying ? (
             <LoadingOverlay visible={true} />
@@ -194,9 +195,9 @@ const Loginscreen = () => {
           className="rounded-xl bg-white py-3 border border-primaryButton items-center justify-center"
         >
          
-            <Text className="text-primaryButton text-xl font-semibold">
+            <AppText className="text-primaryButton text-xl font-semibold">
               Register
-            </Text>
+            </AppText>
          
         </TouchableOpacity>
       </Animated.View>

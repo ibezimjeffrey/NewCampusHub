@@ -15,6 +15,8 @@ const { width } = Dimensions.get("window");
 import CustomPicker from "../components/CustomPicker";
 import  FancyTextInput  from '../components/FancyTextInput';
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
+import AppText from "../components/AppText";
+
 
 
 
@@ -295,6 +297,15 @@ const bankOptions = [
                               type: ALERT_TYPE.WARNING,
                               title: 'Permission Denied',
                               textBody:' Permission to access media library is required!',
+                              titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                             });
       return;
     }
@@ -332,6 +343,15 @@ const bankOptions = [
                                 type: ALERT_TYPE.WARNING,
                                 title: 'Upload Successful',
                                 textBody:' Image uploaded successfully!',
+                                titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                               });
       } catch (error) {
         console.error('Upload Error: ', error);
@@ -339,6 +359,15 @@ const bankOptions = [
                                type: ALERT_TYPE.WARNING,
                                title: 'Upload Failed',
                                textBody:' Image upload failed.',
+                               titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                              });
       } finally {
         setIsUploading(false); // End uploading
@@ -389,6 +418,17 @@ const bankOptions = [
                              type: ALERT_TYPE.WARNING,
                              title: 'Incomplete Details',
                              textBody:'Please fill in all details',
+
+             
+  titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                            });
       setIsApplying(false);
       return;
@@ -399,6 +439,15 @@ const bankOptions = [
                               type: ALERT_TYPE.WARNING,
                               title: 'Insufficient Words',
                               textBody:' Please provide at least 15 words about yourself.',
+                              titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                             });
       setIsApplying(false);
       return;
@@ -409,6 +458,15 @@ const bankOptions = [
         type: ALERT_TYPE.WARNING,
         title: 'Invalid Account Number',
         textBody:'Account number must be 10 digits',
+        titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
       });
       setIsApplying(false);
       return;
@@ -419,6 +477,15 @@ const bankOptions = [
                               type: ALERT_TYPE.WARNING,
                               title: 'Email Not Verified',
                               textBody:' Please verify your email before proceeding.',
+                              titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                             });
       setIsApplying(false);
       return;
@@ -445,6 +512,15 @@ const bankOptions = [
                               type: ALERT_TYPE.DANGER,
                               title: 'Submission Failed',
                               textBody:' There was an error submitting your details. Please try again.',
+                              titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                             });
     }
     setIsApplying(false);
@@ -457,7 +533,7 @@ const bankOptions = [
       >
         <ScrollView className="h-full">
           <View className="w-full h-full bg-white flex  justify-start py-6 space-y-6">
-            <Text className="py-2 text-primaryText text-xl font-semibold">Let's get to know you</Text>
+            <AppText className="py-2 text-primaryText text-xl font-semibold">Let's get to know you</AppText>
 
        <CustomPicker
   label="Select your course"
@@ -475,7 +551,7 @@ const bankOptions = [
 />
 
 
-            <Text className="left-5 text-base">Tell us about yourself</Text>
+            <AppText className="left-5 text-base">Tell us about yourself</AppText>
        <FancyTextInput
   style={{
     width: width - 40,
@@ -499,7 +575,7 @@ const bankOptions = [
 
 
 
-            <Text className="left-5 text-base">What are your skills</Text>
+            <AppText className="left-5 text-base">What are your skills</AppText>
 
 
          <FancyTextInput
@@ -520,7 +596,7 @@ const bankOptions = [
    
 
 
-            <Text className="left-5 text-base">Select Your Bank</Text>
+            <AppText className="left-5 text-base">Select Your Bank</AppText>
             <View className="">
 
               
@@ -537,7 +613,7 @@ const bankOptions = [
 
 
 
- <Text className="left-5 text-base">Account Number</Text>
+ <AppText className="left-5 text-base">Account Number</AppText>
 
 
 
@@ -584,9 +660,9 @@ const bankOptions = [
               <View>
 
                 
-                <Text style={{ color: '#268290', textAlign: 'center', marginBottom: 10 }} className="text-base">
+                <AppText style={{ color: '#268290', textAlign: 'center', marginBottom: 10 }} className="text-base">
                   Upload Images of your work(Optional)
-                </Text>
+                </AppText>
                 {isUploading && <ActivityIndicator size="large" color="#268290" />}
               </View>
             </TouchableOpacity>
@@ -605,7 +681,7 @@ const bankOptions = [
               {isApplying ? (
                 <ActivityIndicator className="py-3" size="small" color="#ffffff" />
               ) : (
-                <Text className='py-2 text-white text-xl font-semibold'>Ready to work!</Text>
+                <AppText className='py-2 text-white text-xl font-semibold'>Ready to work!</AppText>
               )}
             </TouchableOpacity>
           </View>

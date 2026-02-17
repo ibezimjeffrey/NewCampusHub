@@ -12,6 +12,7 @@ import { Entypo } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Dimensions } from 'react-native';
 import { NEW_LOGO } from '@/assets';
+import AppText from '@/components/AppText';
 
 
 const { width } = Dimensions.get('window');
@@ -89,7 +90,7 @@ const msgQuery = query(
           <View  style={{ width: width - 40, paddingVertical: 10 }} className=" bg-slate-200 px-4 py-1  rounded-xl h-[150px] border-1 relative shadow ">
      
             <Image source={{ uri: post.User.profilePic }} resizeMode="cover" className="w-12 h-12 relative top-2" style={{ alignSelf:'flex-end' }} />
-            <Text
+            <AppText
   style={{
     color: '#6b7280',              // gray-500
     fontSize: scaleFont(16),       // was text-xl
@@ -103,10 +104,10 @@ const msgQuery = query(
   minimumFontScale={0.75}
 >
   {post.Location}
-</Text>
+</AppText>
 
 
-           <Text
+           <AppText
   style={{
     color: '#000',
     fontSize: 20,        // was text-2xl
@@ -121,7 +122,7 @@ const msgQuery = query(
   minimumFontScale={0.7}
 >
   {post.JobDetails}
-</Text>
+</AppText>
 
             
            <View style={{ flex: 1, justifyContent: 'flex-end' }}>
@@ -130,7 +131,7 @@ const msgQuery = query(
     justifyContent: 'space-between',
     alignItems: 'flex-end',
   }}>
-    <Text
+    <AppText
       style={{
         color: '#268290',
         fontWeight: '300',
@@ -140,9 +141,9 @@ const msgQuery = query(
       numberOfLines={1} // prevents wrapping
     >
       {post.DisplayTime}
-    </Text>
+    </AppText>
 
-    <Text
+    <AppText
       style={{
         color: '#000',
         fontWeight: '300',
@@ -152,8 +153,8 @@ const msgQuery = query(
       }}
       numberOfLines={1}
     >
-      Fixed Price / ₦{post.Budget}
-    </Text>
+      ₦{post.Budget}
+    </AppText>
   </View>
 </View>
 
@@ -177,24 +178,24 @@ const msgQuery = query(
 </View>
      
           <View>
-  <Text style={{ color: '#000', fontSize: scaleFont(18), fontWeight: '300' }}>
+  <AppText style={{ color: '#000', fontSize: scaleFont(18), fontWeight: '300' }}>
     {greeting}
-    <Text style={{ color: '#268290', fontSize: scaleFont(22), fontWeight: '400', textTransform: 'capitalize' }}>
+    <AppText style={{ color: '#268290', fontSize: scaleFont(22), fontWeight: '400', textTransform: 'capitalize' }}>
       {user?.fullName}
-    </Text>
-  </Text>
+    </AppText>
+  </AppText>
 </View>
 
 
           <View className="flex-row flex justify-between items-end">
 
           <View >
-            <Text className="text-2xl p-2 font-thin text-black"> </Text>
+            <AppText className="text-2xl p-2  text-black">  </AppText>
           </View>
 
       
         <View className=" right-7">
-            <Text className="text-1xl text-blue-300 italic">Available Jobs</Text>
+            <AppText className="text-blue-300 font-italic">Available Jobs</AppText>
           </View>
 
      
@@ -223,7 +224,7 @@ const msgQuery = query(
 
               ) : (
                 <View className=" flex flex-column justify-center align-middle items-center">
-                <Text>No jobs available</Text>
+                <AppText>No jobs available</AppText>
                 </View>
               )}
             </View>

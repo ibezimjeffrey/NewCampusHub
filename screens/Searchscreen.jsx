@@ -8,6 +8,7 @@ import { BlurView } from 'expo-blur';
 import { Dimensions } from 'react-native';
 import FancyTextInput from '@/components/FancyTextInput';
 import { SafeAreaView } from "react-native-safe-area-context";
+import AppText from '@/components/AppText';
 
 
 const { width } = Dimensions.get('window');
@@ -70,6 +71,7 @@ const Searchscreen = () => {
   <FancyTextInput
     style={{
       width: '100%',
+      fontFamily: 'inter',
       borderWidth: 1,
       borderColor: '#ccc',
       borderRadius: 20,
@@ -118,7 +120,7 @@ const Searchscreen = () => {
 
         {searchPerformed && !isLoading && searchResults.length === 0 && (
           <View style={{top:height/2 - 100, position: "absolute", left:width/2 - 100}} >
-            <Text className="italic font-extralight">No jobs available</Text>
+            <AppText className="italic">No jobs available</AppText>
           </View>
         )}
 
@@ -134,7 +136,7 @@ const Searchscreen = () => {
                <View  style={{ width: width - 40, paddingVertical: 10 }} className=" bg-slate-200 px-4 py-1  rounded-xl h-[150px] border-1 relative shadow ">
      
             <Image source={{ uri: post.User.profilePic }} resizeMode="cover" className="w-12 h-12 relative top-2" style={{ alignSelf:'flex-end' }} />
-            <Text
+            <AppText
   style={{
     color: '#6b7280',              // gray-500
     fontSize: scaleFont(16),       // was text-xl
@@ -148,10 +150,10 @@ const Searchscreen = () => {
   minimumFontScale={0.75}
 >
   {post.Location}
-</Text>
+</AppText>
 
 
-           <Text
+           <AppText
   style={{
     color: '#000',
     fontSize: 20,        // was text-2xl
@@ -166,7 +168,7 @@ const Searchscreen = () => {
   minimumFontScale={0.7}
 >
   {post.JobDetails}
-</Text>
+</AppText>
 
             
            <View style={{ flex: 1, justifyContent: 'flex-end' }}>
@@ -175,7 +177,7 @@ const Searchscreen = () => {
     justifyContent: 'space-between',
     alignItems: 'flex-end',
   }}>
-    <Text
+    <AppText
       style={{
         color: '#268290',
         fontWeight: '300',
@@ -185,9 +187,9 @@ const Searchscreen = () => {
       numberOfLines={1} // prevents wrapping
     >
       {post.DisplayTime}
-    </Text>
+    </AppText>
 
-    <Text className='pr-3'
+    <AppText className='pr-3'
       style={{
         color: '#000',
         fontWeight: '300',
@@ -198,7 +200,7 @@ const Searchscreen = () => {
       numberOfLines={1}
     >
       Fixed Price / ₦{post.Budget}
-    </Text>
+    </AppText>
   </View>
 </View>
 

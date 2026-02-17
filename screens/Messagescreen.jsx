@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import { QuerySnapshot, collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { firestoreDB } from "../config/firebase.config";
 import { Dimensions, PixelRatio } from 'react-native';
+import AppText from "@/components/AppText";
 
 const { width } = Dimensions.get('window');
 
@@ -102,7 +103,7 @@ const Messagescreen = () => {
   <View style={{ flex: 1, marginLeft: 20 }}>
     {/* Job Name */}
     <View style={{ borderBottomWidth: 2, borderColor: "#D3D3D3" }}>
-      <Text
+      <AppText
         style={{
           fontSize: scaleFont(18),
           color: "#333",
@@ -112,12 +113,12 @@ const Messagescreen = () => {
         numberOfLines={1} // prevent overflow
       >
         {isCurrentUserRoomCreator ? room.jobName : ""} Job
-      </Text>
+      </AppText>
     </View>
 
     {/* User Name + Role */}
 <View style={{ flexDirection: "row", borderTopWidth: 2, borderColor: "#D3D3D3", paddingTop: 5, flex: 1 }}>
-  <Text
+  <AppText
     style={{
       fontSize: scaleFont(16),
       color: "#666",
@@ -130,9 +131,9 @@ const Messagescreen = () => {
     minimumFontScale={0.7}       // shrink up to 70% of original size
   >
     {isCurrentUserRoomCreator ? room.user.fullName : "Babby"}
-  </Text>
+  </AppText>
 
-  <Text
+  <AppText
     style={{
       fontSize: scaleFont(16),
       color: "#268290",
@@ -145,8 +146,8 @@ const Messagescreen = () => {
     adjustsFontSizeToFit={true} // SHRINK font if too long
     minimumFontScale={0.7}      // shrink up to 70% of original size
   >
-    { !isNotCurrentUserJobPoster ? "(Freelancer)" : "(Client)" }
-  </Text>
+    { !isNotCurrentUserJobPoster ? "Freelancer" : "Client" }
+  </AppText>
 </View>
 
     </View>
@@ -167,7 +168,7 @@ const Messagescreen = () => {
         <ScrollView className="h-full" style={{ paddingHorizontal: 10, paddingTop: 10 }}>
           <View className="h-full">
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 10 }}>
-              <Text style={{ fontSize: 20, color: "#268290" }}>Messages</Text>
+              <AppText style={{ fontSize: 20, color: "#268290" }}>Messages</AppText>
              
             </View>
             {isLoading ? (
@@ -182,7 +183,7 @@ const Messagescreen = () => {
                   </>
                 ) : (
                   <View className="items-center">
-                    <Text >No messages</Text>
+                    <AppText >No messages</AppText>
 
                   </View>
                   

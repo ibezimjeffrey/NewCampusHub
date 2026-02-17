@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, KeyboardAvoidingView, ScrollView, Platfor
 import { Entypo, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-import { addDoc, collection, doc, getDocs,getDoc, onSnapshot, orderBy, query, serverTimestamp, where, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs,getDoc, onSnapshot, orderBy, query, serverTimestamp, where, setDoc, deleteDoc } from 'firebase/firestore';
 import { firestoreDB } from '../config/firebase.config';
 import { BlurView } from 'expo-blur';
 import LoadingOverlay from './LoadingOverlay';
@@ -13,6 +13,7 @@ import { Dimensions, PixelRatio } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 import { PricingButton } from 'react-native-elements/dist/pricing/PricingCard';
+import AppText from '@/components/AppText';
 const { width } = Dimensions.get('window');
 
 const scaleFont = (baseFont) => {
@@ -39,6 +40,7 @@ const Chatscreen = ({ route }) => {
   const [Balance, setBalance] = useState(0)
   const [FreelancerBalance, setFreelancerBalance] = useState(0)
   const Price = parseFloat(post.price.replace(/[^0-9.-]+/g, ''));
+  const [Left, setLeft] = useState(0)
 
   useLayoutEffect(() => {
     const msgQuery = query(
@@ -56,6 +58,19 @@ const Chatscreen = ({ route }) => {
     return unsubscribe;
   }, [post._id]);
 
+
+   const removePost = async (postIdToRemove) => {
+      
+      try {
+        await deleteDoc(doc(firestoreDB, 'postings', postIdToRemove));
+         
+      } catch (error) {
+        console.error('Error removing document: ', error);
+      }
+    };
+
+
+
   useEffect(() => {
     const checkHiredStatus = async () => {
       try {
@@ -70,6 +85,21 @@ const Chatscreen = ({ route }) => {
 
     checkHiredStatus();
   }, [post.idRoom]);
+
+
+
+    useEffect(() => {
+      try {
+       if( user._id !== post.index1) {
+        setLeft("50");
+        } else {
+          setLeft("0");
+        }
+      } catch (error) {
+        console.error('Error checking role status:', error);
+      }
+   
+  }, []);
 
 
 
@@ -121,9 +151,6 @@ const Chatscreen = ({ route }) => {
           const existingBalance = parseFloat(balanceDocSnapshot.data().Amount);
           
           setBalance(existingBalance)
-          
-
-        
           
         } 
       } catch (error) {
@@ -281,6 +308,7 @@ const Chatscreen = ({ route }) => {
         price: post.price,
       };
       await addDoc(collection(firestoreDB, 'Status'), hireStatus);
+      removePost(post.idRoom)
       setIsHired(true);
       setIsApplying(false)
       
@@ -421,20 +449,23 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
       <MaterialIcons name="chevron-left" size={32} color={"#fbfbfb"} />
     </TouchableOpacity>
 
-    <View className='left-7' style={{ flex: 1, alignItems: 'center' }}>
+    
+
+    <View  style={{ flex: 1, alignItems: 'center', marginLeft: Left }} >
+      
       <View style={{ flexDirection: 'column', alignItems: 'center' }}>
         <TouchableOpacity onPress={viewProfile}>
           <View>
-            <Image source={{ uri: post.user.profilePic }} resizeMode="contain" className="rounded-full  w-12 h-12" />
+            <Image source={{ uri: post.user.profilePic }} resizeMode="contain" className="rounded-full  w-12 h-12" style={{  borderRadius: 80, borderWidth: 2, borderColor: '#268290' }} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={viewProfile}>
           <View>
-           <Text
+           <AppText
   style={{
     color: '#000',
     fontSize: scaleFont(16),       // scales based on screen
-    fontWeight: '300',
+
     textTransform: 'capitalize',
     textAlign: 'center',
   }}
@@ -443,7 +474,7 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   minimumFontScale={0.7}           // shrink down to 70% of original
 >
   {post.user.fullName}
-</Text>
+</AppText>
 
           </View>
         </TouchableOpacity>
@@ -458,14 +489,14 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
       ) : (
         user._id !== post.index1 && (
           <>
-            {isHired && !IsPaid? (
+            {isHired && !IsPaid ? (
   <TouchableOpacity onPress={PAY}>
     <View style={{ left: 20 }} className="relative">
       <View className="border-1 left-7 mr-8 bg-yellow-400 border-emerald-950 rounded-lg p-4">
-       <Text
+       <AppText
   style={{
     fontSize: scaleFont(16),
-    fontWeight: '700',
+   
     color: '#000',
   }}
   numberOfLines={1}
@@ -473,8 +504,8 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   minimumFontScale={0.7}
 >
   PAY 
-</Text>
-<Text>₦{post.price}</Text>
+</AppText>
+<AppText>₦{post.price}</AppText>
 
       </View>
     </View>
@@ -486,10 +517,10 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   <TouchableOpacity disabled={isApplying} onPress={Employ}>
     <View style={{ left: 20 }} className="relative">
       <View className="border-1 left-7 bg-red-400 border-emerald-950 mr-8 rounded-lg p-4">
-      <Text
+      <AppText
   style={{
     fontSize: scaleFont(16),
-    fontWeight: '700',
+  
     color: '#000',
   }}
   numberOfLines={1}
@@ -497,7 +528,7 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   minimumFontScale={0.7}
 >
   HIRE
-</Text>
+</AppText>
 
       </View>
     </View>
@@ -524,10 +555,10 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   <TouchableOpacity disabled>
     <View style={{ left: 20 }} className="relative">
       <View style={{ backgroundColor: "#88E788" }} className="border-1 left-7  border-emerald-950 mr-8 rounded-lg p-4">
-        <Text
+        <AppText
   style={{
     fontSize: scaleFont(16),
-    fontWeight: '700',
+    
     color: '#000',
   }}
   numberOfLines={1}
@@ -535,7 +566,7 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   minimumFontScale={0.7}
 >
   PAID
-</Text>
+</AppText>
 
       </View>
     </View>
@@ -557,10 +588,10 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
         user._id == post.index1 && FreelanceHired ?
         <View style={{ left: 20 }} className="relative">
       <View style={{ backgroundColor: "#facc15" }} className="border-1 left-7  border-emerald-950 mr-8 rounded-lg p-4">
-        <Text
+        <AppText
   style={{
     fontSize: scaleFont(16),
-    fontWeight: '700',
+   
     color: '#000',
   }}
   numberOfLines={1}
@@ -568,7 +599,7 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   minimumFontScale={0.7}
 >
   HIRED
-</Text>
+</AppText>
 
       </View>
     </View>
@@ -593,7 +624,10 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
           
           >
             <>
-              <ScrollView className="h-full">
+              <ScrollView
+      showsVerticalScrollIndicator={false}
+      
+      className="h-full">
                 {isLoading ? (
                   <View className="w-full flex items-center justify-center">
                     <ActivityIndicator size={"large"} color={"#268290"} />
@@ -611,10 +645,10 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
         ) : (
           <View  className="px-4 py-2 rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl bg-blue-400 w-auto relative ">
 
-         <Text
+         <AppText
   style={{
     fontSize: scaleFont(14),        // responsive font size
-    fontWeight: '600',               // equivalent to font-semibold
+               // equivalent to font-semibold
     color: '#fff',                   // keep white text
   }}
   numberOfLines={6}                  // keeps it on a single line (optional)
@@ -622,7 +656,7 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   minimumFontScale={0.7}             // shrink down to 70% of original size
 >
   {msg.message}
-</Text>
+</AppText>
 
           </View>
         )}
@@ -635,11 +669,11 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
         ) : (
           <View className="px-4 py-2 rounded-tl-2xl rounded-tr-2xl rounded-br-2xl bg-gray-300 w-auto relative ">
 
-          <Text className="text-base  text-black">
-           <Text
+          <AppText className="text-base  text-black">
+           <AppText
   style={{
     fontSize: scaleFont(14),        // responsive font size
-    fontWeight: '600',               // equivalent to font-semibold
+               // equivalent to font-semibold
                       // keep white text
   }}
   numberOfLines={6}                  // keeps it on a single line (optional)
@@ -647,9 +681,9 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
   minimumFontScale={0.7}             // shrink down to 70% of original size
 >
   {msg.message}
-</Text>
+</AppText>
 
-          </Text>
+          </AppText>
           </View>
           
         )}
@@ -658,13 +692,13 @@ await addDoc(collection(firestoreDB, 'TransactionHistory'), {
     )}
     <View style={{ alignSelf: msg.user._id === user._id ? "flex-end" : "flex-start" }}>
       {msg?.timeStamp?.seconds && (
-        <Text className="text-[12px] text-black ">
+        <AppText className="text-[12px] text-black ">
           {new Date(parseInt(msg?.timeStamp?.seconds) * 1000).toLocaleTimeString("en-US", {
             hour: "numeric",
             minute: "numeric",
             hour12: false,
           })}
-        </Text>
+        </AppText>
       )}
     </View>
   </View>

@@ -8,6 +8,7 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { useFonts, Dosis_200ExtraLight, Dosis_400Regular, Dosis_800ExtraBold } from '@expo-google-fonts/dosis';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AppText from '@/components/AppText';
 
 const ViewProfilescreen = ({ route }) => {
   const { post } = route.params;
@@ -75,7 +76,11 @@ const ViewProfilescreen = ({ route }) => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView className="p-4">
+      <ScrollView
+                 contentContainerStyle={{ padding: 20 }}
+                   showsVerticalScrollIndicator={false}
+                   
+                 >
         <View className="flex-row items-center justify-between pt-4">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <MaterialIcons name="chevron-left" size={32} color="#268290" />
@@ -86,22 +91,22 @@ const ViewProfilescreen = ({ route }) => {
             <ActivityIndicator size="large" color="#268290" />
           </View>
         ) : (
-          <>
+          <> 
             <View className="items-center mt-8">
               <View className="rounded-full p-1">
-                <Image source={{ uri: post.user.profilePic }} resizeMode="cover" style={{ width: 100, height: 100 }} />
+                <Image source={{ uri: post.user.profilePic }} resizeMode="cover" style={{  borderRadius: 80, borderWidth: 2, borderColor: '#268290',width: 100, height: 100  }}  />
               </View>
-              <Text className="text-2xl capitalize font-bold pt-4">{post.user.fullName}</Text>
-              <Text className="text-base font-bold text-gray-500">{post.user.email}</Text>
+              <AppText className="text-2xl capitalize font-bold pt-4">{post.user.fullName}</AppText>
+              <AppText className="text-base font-bold text-gray-500">{post.user.email}</AppText>
             </View>
             <View className="flex-row justify-between mt-4">
               <View className="items-center">
-                <Text className="text-2xl">{jobCount}</Text>
-                <Text className="text-gray-500">Jobs posted</Text>
+                <AppText className="text-2xl">{jobCount}</AppText>
+                <AppText className="text-gray-500">Jobs posted</AppText>
               </View>
               <View className="items-center">
-                <Text className="text-2xl">{allHires}</Text>
-                <Text className="text-gray-500">Hires</Text>
+                <AppText className="text-2xl">{allHires}</AppText>
+                <AppText className="text-gray-500">Hires</AppText>
               </View>
             </View>
 
@@ -125,25 +130,25 @@ const ViewProfilescreen = ({ route }) => {
     />
 
     {/* Header */}
-    <Text
+    <AppText
       style={{
         fontSize: 12,
         letterSpacing: 2,
         color: '#268290',
-        fontWeight: '600',
+      
         marginBottom: 10,
         marginLeft: 8,
       }}
     >
       COURSE OF STUDY
-    </Text>
+    </AppText>
 
     {/* Value */}
-    <Text
+    <AppText
       style={{
         fontSize: 16,
         color: '#111',
-        fontWeight: '400',
+      
         marginLeft: 8,
         textTransform: 'capitalize',
       }}
@@ -151,7 +156,7 @@ const ViewProfilescreen = ({ route }) => {
       {details.length > 0 && details[0].Hostel
         ? details[0].Hostel
         : 'Not specified'}
-    </Text>
+    </AppText>
   </View>
 </View>
 </View>
@@ -174,35 +179,35 @@ const ViewProfilescreen = ({ route }) => {
 
       {/* Header */}
       <View className="flex-row items-center justify-between mb-2">
-      <Text
+      <AppText
         style={{
           fontSize: 12,
           letterSpacing: 2,
           color: '#268290',
-          fontWeight: '600',
+          
           marginBottom: 12,
           marginLeft: 8,
         }}
       >
         ABOUT ME
-      </Text>
+      </AppText>
       </View>
 
       {/* Content */}
       {details.length > 0 && details[0].About ? (
-        <Text
+        <AppText
           style={{
             fontSize: 16,
             lineHeight: 24,
             color: '#111',
-            fontWeight: '300',
+          
             marginLeft: 8,
           }}
         >
           {details[0].About}
-        </Text>
+        </AppText>
       ) : (
-        <Text
+        <AppText
           style={{
             fontSize: 14,
             fontStyle: 'italic',
@@ -211,7 +216,7 @@ const ViewProfilescreen = ({ route }) => {
           }}
         >
           No bio yet — this is where personality lives.
-        </Text>
+        </AppText>
       )}
     </View>
 
@@ -224,7 +229,7 @@ const ViewProfilescreen = ({ route }) => {
   }}
 />
 
-       <Text className="mt-5 font-semibold">Skills</Text>
+       <AppText className="mt-5 font-inter ">Skills</AppText>
 
         
        <View className="mt-4" style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -242,13 +247,13 @@ const ViewProfilescreen = ({ route }) => {
             margin: 4,
           }}
         >
-          <Text className="capitalize">{skill.trim()}</Text>
+          <AppText className="capitalize">{skill.trim()}</AppText>
         </View>
       </View>
     ))
   ) : (
     <View className='right-5 w-full justify-center items-center'>
-      <Text>No skills</Text>
+      <AppText>No skills</AppText>
       </View>
 
     
@@ -265,7 +270,7 @@ const ViewProfilescreen = ({ route }) => {
   }}
 />
             <View className="w-full flex-row items-center">
-              <Text className="mt-5 font-semibold">Portfolio</Text>
+              <AppText className="mt-5 font-inter">Portfolio</AppText>
             </View>
             <View className="left-6" style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
               {details.length > 0 && details[0].images && Array.isArray(details[0].images) && details[0].images.length > 0 && details[0].images.map((imageUri, index) => (
@@ -293,7 +298,7 @@ const ViewProfilescreen = ({ route }) => {
               ))}
               {details.length === 0 && portfolioImages.length === 0 && (
                 <View className='right-5 w-full justify-center items-center'>
-                  <Text className="italic font-extralight">Nothing on portfolio</Text>
+                  <AppText className="italic font-extralight">Nothing on portfolio</AppText>
                 </View>
               )}
             </View>

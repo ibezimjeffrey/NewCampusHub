@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { BlurView } from "expo-blur";
 import { MaterialIcons } from "@expo/vector-icons";
+import AppText from "../components/AppText";
 
 const { width } = Dimensions.get("window");
 
@@ -50,9 +51,9 @@ const CustomPicker = ({ label, value, options, onSelect }) => {
         onPress={() => setVisible(true)}
         activeOpacity={0.85}
       >
-        <Text style={styles.value}>
+        <AppText style={styles.value}>
           {selectedOption ? selectedOption.label : label}
-        </Text>
+        </AppText>
         <MaterialIcons name="keyboard-arrow-down" size={22} color="#666" />
       </TouchableOpacity>
 
@@ -92,9 +93,9 @@ const CustomPicker = ({ label, value, options, onSelect }) => {
                       setVisible(false);
                     }}
                   >
-                    <Text style={[styles.optionText, selected && styles.selectedText]}>
+                    <AppText style={[styles.optionText, selected && styles.selectedText]}>
                       {item.label} {/* Display the label */}
-                    </Text>
+                    </AppText>
                     {selected && (
                       <MaterialIcons name="check-circle" size={20} color="#268290" />
                     )}

@@ -15,6 +15,7 @@ import FancyTextInput from '@/components/FancyTextInput'
 import { Dimensions } from 'react-native';
 const { width } = Dimensions.get('window');
 import { serverTimestamp } from 'firebase/firestore';
+import AppText from '@/components/AppText'
 
 
 const scaleFont = (baseFont) => {
@@ -195,6 +196,16 @@ const locationOptions = [
       return;
     }
 
+    if (numericBudget < 2000) {
+       Toast.show({
+                  type: ALERT_TYPE.WARNING,
+                  title: 'Budget Too Low',
+                  textBody:'Budget has to be at least N2,000',
+                });
+      setIsApplying(false);
+      return;
+    }
+
     if (numericBudget> Balance) {
 
        Toast.show({
@@ -258,18 +269,18 @@ const locationOptions = [
   };
 
   return (
-    <SafeAreaView className="bg-white">
+    <SafeAreaView edges={['top']} className="bg-white">
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
-        <ScrollView className="h-full">
+        <ScrollView showsVerticalScrollIndicator={false} className="h-full">
           
           <View className="w-full h-full bg-white flex justify-start py-6 space-y-6">
             <View className="items-center">
-              <Text style={{color:"#268290"}} className="text-xl">Create Post</Text>
+              <AppText style={{color:"#268290"}} className="text-xl">Create Post</AppText>
             </View>
 
-          <Text style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
+          <AppText style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
   Job Title
-</Text>
+</AppText>
 
             <View>
        <CustomPicker
@@ -290,9 +301,9 @@ const locationOptions = [
                 value={otherJob}
               />
             )}
-        <Text style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
+        <AppText style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
   Description
-</Text>
+</AppText>
             <FancyTextInput
               style={{borderColor: value1.length > 0 ? "#268290" : "gray"}}
               className="border rounded-2xl w-[360px] px-4 py-9 flex-row items-center justify-between space-x-8 left-5 my-2"
@@ -304,9 +315,9 @@ const locationOptions = [
 
 
 
-        <Text style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
+        <AppText style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
   Location
-</Text>
+</AppText>
             <View >
              <View className="">
  
@@ -424,9 +435,9 @@ const locationOptions = [
 
             </View> */}
 
-                    <Text style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
+                    <AppText style={{ fontSize: scaleFont(18), marginLeft: 20, color: '#000', fontWeight: '400' }}>
   Budget
-</Text>
+</AppText>
            
                            <FancyTextInput
                              className="flex-1 text-3xl  text-black "
@@ -455,7 +466,7 @@ const locationOptions = [
   {isApplying ? (
     <ActivityIndicator size="small" color="#ffffff" />
   ) : (
-    <Text
+    <AppText
       style={{
         color: '#fff',
         fontSize: scaleFont(18),   // responsive font size
@@ -463,8 +474,8 @@ const locationOptions = [
         paddingVertical: 6,
       }}
     >
-      Post Job
-    </Text>
+      Post
+    </AppText>
   )}
 </TouchableOpacity>
 

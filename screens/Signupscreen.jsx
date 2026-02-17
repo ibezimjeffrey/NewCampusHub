@@ -15,6 +15,7 @@ import { StyleSheet } from "react-native";
 import { FlatList } from "react-native";
 import { ALERT_TYPE, Toast } from 'react-native-alert-notification';
 import LoadingOverlay from './LoadingOverlay';
+import AppText from '@/components/AppText';
 
 
 const Signupscreen = () => {
@@ -53,6 +54,15 @@ const Signupscreen = () => {
                         type: ALERT_TYPE.WARNING,
                         title: 'Incomplete Details',
                         textBody:'Please fill in all details',
+                         titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                       });
       return;
     }
@@ -63,6 +73,15 @@ const Signupscreen = () => {
                         type: ALERT_TYPE.WARNING,
                         title: 'Weak Password',
                         textBody:' Please choose a stronger password with at least 8 characters.',
+                                     titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                       });
       return;
     }
@@ -73,6 +92,16 @@ const Signupscreen = () => {
                         type: ALERT_TYPE.WARNING,
                         title: 'Invalid Email Address',
                         textBody:' Please enter a valid email address.',
+                         titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
+                        
                       });
       return;
     }
@@ -98,6 +127,15 @@ const Signupscreen = () => {
                           type: ALERT_TYPE.WARNING,
                           title: 'Email already in use',
                           textBody:' Please use a different email address.',
+                           titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                         });
 
         if(error ==="Failed to get document because the client is offline.")
@@ -105,6 +143,15 @@ const Signupscreen = () => {
                             type: ALERT_TYPE.WARNING,
                             title: 'No Internet Connection',
                             textBody:' Please check your internet connection and try again.',
+                             titleStyle: {
+    fontFamily: "serif",
+    fontSize: 16,
+  },
+
+  textBodyStyle: {
+    fontFamily: "Inter-Regular",
+    fontSize: 14,
+  }
                           });
 
       }
@@ -239,15 +286,15 @@ const ITEM_SIZE = screenwidth / NUM_COLUMNS - 24;
                   checkPasswordStrength(value);
                 }}
               />
-              {password !== "" && passwordStrength && <Text>Password Strength: {passwordStrength}</Text>}
+              {password !== "" && passwordStrength && <AppText>Password Strength: {passwordStrength}</AppText>}
               <TouchableOpacity disabled={isApplying} onPress={handleSignup}
                className="rounded-xl px-12  bg-primaryButton mt-2 flex items-center w-full justify-center">
                
-            <Text className='py-2 text-white text-xl font-semibold'>Next</Text>
+            <AppText className='py-2 text-white text-xl font-semibold'>Next</AppText>
         
               </TouchableOpacity>
               <View className="w-full flex-row py-2 justify-center space-x-2">
-                <Text className="text-base font-thin text-primaryText">Have an Account?</Text>
+                <AppText className="text-base text-primaryText">Have an Account?</AppText>
               </View>
                  
 {isApplying ? (
@@ -263,9 +310,9 @@ const ITEM_SIZE = screenwidth / NUM_COLUMNS - 24;
                         className="rounded-xl bg-white py-3 border border-primaryButton items-center justify-center"
                       >
                       
-                          <Text className="text-primaryButton text-xl font-semibold">
+                          <AppText className="text-primaryButton text-xl font-semibold">
                             Login
-                          </Text>
+                          </AppText>
                        
                       </TouchableOpacity>
                     </View>

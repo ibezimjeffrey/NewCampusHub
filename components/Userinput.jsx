@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Entypo, MaterialIcons } from '@expo/vector-icons';
 
 const Userinput = ({ Placeholder, isPass, setstateValue, setgetEmailValidationStatus }) => {
@@ -51,7 +51,9 @@ const Userinput = ({ Placeholder, isPass, setstateValue, setgetEmailValidationSt
   />
 
   <TextInput
-    className={`border h-[90] rounded-2xl text-primaryText font-semibold px-12 py-4 my-2
+   style={{fontFamily: "inter"}}
+
+    className={`border h-[90] rounded-2xl text-primaryText font-inter px-12 py-4 my-2
       ${
         !isEmailValid &&
         Placeholder === 'Email' &&
@@ -87,5 +89,12 @@ const Userinput = ({ Placeholder, isPass, setstateValue, setgetEmailValidationSt
 
   );
 };
+const styles = StyleSheet.create({
+  input: {
+    
+    fontFamily: "inter",
+ 
+  },
+});
 
 export default Userinput;
