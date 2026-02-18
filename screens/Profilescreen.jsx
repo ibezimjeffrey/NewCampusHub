@@ -1279,7 +1279,7 @@ const Profilescreen = () => {
                       ))
                     ) : (
                       <View className=" w-full justify-center items-center">
-                        <AppText className="italic font-extralight">
+                        <AppText className="italic ">
                           No jobs posted
                         </AppText>
                       </View>

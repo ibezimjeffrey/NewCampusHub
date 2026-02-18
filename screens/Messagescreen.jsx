@@ -112,7 +112,7 @@ const Messagescreen = () => {
         }}
         numberOfLines={1} // prevent overflow
       >
-        {isCurrentUserRoomCreator ? room.jobName : ""} Job
+        {isCurrentUserRoomCreator ? room.jobName : ""}
       </AppText>
     </View>
 

@@ -56,14 +56,16 @@ const Chatscreen = ({ route }) => {
     });
 
     return unsubscribe;
-  }, [post._id]);
+  }, [post.idRoom]);
 
 
-   const removePost = async (postIdToRemove) => {
-      
+   const removePost = async (postingId) => {
+      // The posting documents use the auto-generated Firestore ID stored in
+      // the post._id field.  Earlier we were passing post.idRoom which is a
+      // completely different value, so deleteDoc never actually matched any
+      // document.  Use the real posting ID instead.
       try {
-        await deleteDoc(doc(firestoreDB, 'postings', postIdToRemove));
-         
+        await deleteDoc(doc(firestoreDB, 'postings', postingId));
       } catch (error) {
         console.error('Error removing document: ', error);
       }
@@ -92,14 +94,19 @@ const Chatscreen = ({ route }) => {
       try {
        if( user._id !== post.index1) {
         setLeft("50");
-        } else {
+        } 
+        else if(FreelanceHired){
+        setLeft("90");
+        }
+        
+        else {
           setLeft("0");
         }
       } catch (error) {
         console.error('Error checking role status:', error);
       }
    
-  }, []);
+  }, [user._id, post.index1, FreelanceHired]);
 
 
 
@@ -117,7 +124,7 @@ const Chatscreen = ({ route }) => {
     };
 
     checkPaidStatus();
-  }, [post.idRoom]);
+  }, [post._id]);
 
 
 
@@ -281,6 +288,7 @@ const Chatscreen = ({ route }) => {
     Linking.openURL(`tel:${post.user.email}`);
   };
 
+  
   const Employ = async () => {
 
     if (Balance < Price){
@@ -307,8 +315,11 @@ const Chatscreen = ({ route }) => {
         post: post,
         price: post.price,
       };
+      
       await addDoc(collection(firestoreDB, 'Status'), hireStatus);
-      removePost(post.idRoom)
+      // remove the original job posting from the collection using its
+      // Firestore document ID (post._id)
+      await removePost(post._id);
       setIsHired(true);
       setIsApplying(false)
       
