@@ -231,7 +231,7 @@ const Settings = () => {
 
   return (
     <View className="flex-1 bg-white">
-      <SafeAreaView edges={['top']} >
+      <SafeAreaView edges={['top','bottom']} >
         <ScrollView  contentContainerStyle={{ paddingBottom: 20 }}
       showsVerticalScrollIndicator={false}
        className="px-4">
