@@ -24,9 +24,7 @@ const Userinput = ({ Placeholder, isPass, setstateValue, setgetEmailValidationSt
     setstateValue(text); // Pass the new value to the parent component
 
     if (Placeholder === "Email") {
-    //  const emailRegex = /^([a-zA-Z]+\.?\d+@stu\.cu\.edu\.ng|[a-zA-Z0-9._%+-]+@pau\.edu\.ng|[a-zA-Z0-9._%+-]+@student\.babcock\.edu\.ng)$/;
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+const emailRegex = /^(jeff\.ibezim@gmail\.com|abimbola\.ibezim@gmail\.com|[a-zA-Z0-9._%+-]+@pau\.edu\.ng)$/;
 
       const status = emailRegex.test(text);
       setisEmailValid(status);

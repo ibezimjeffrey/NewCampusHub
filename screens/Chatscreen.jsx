@@ -342,88 +342,87 @@ const Chatscreen = ({ route }) => {
 
 
 const PAY = async () => {
-    try {
+  try {
+    setIsApplying(true);
 
-      setIsApplying(true)
-      const id = `${post.user._id}-${Date.now()}`;
-      const room_id = `${user._id}-${Date.now()}-${new Date().getSeconds()}`;
-      const PaymentStatus = {
-        _id: id,
-        user: user,
-        receipient: post.user,
-        status: true,
-        idRoom: room_id,
-        post: post,
-        price: post.price,
-      };
-      await addDoc(collection(firestoreDB, 'Payments'), PaymentStatus);
+    const id = `${post.user._id}-${Date.now()}`;
+    const room_id = `${user._id}-${Date.now()}-${new Date().getSeconds()}`;
 
-       const feeAmount = Math.round(Price * (7.5 / 100));
-       const User_Amount = Price - feeAmount;
+    const PaymentStatus = {
+      _id: id,
+      user: user,
+      receipient: post.user,
+      status: true,
+      idRoom: room_id,
+      post: post,
+      price: post.price,
+    };
 
-      // USER DEBIT TRANSACTION
-await addDoc(collection(firestoreDB, 'TransactionHistory'), {
-  userId: user._id,
-  type: 'debit',
-  amount: Price,
-  reason: `Payment to ${post.user.fullName}`,
-  relatedPostId: post._id,
-  relatedUserId: post.user._id,
-  createdAt: serverTimestamp()
-});
+    const feeAmount = Math.round(Price * (7.5 / 100));
+    const User_Amount = Price - feeAmount;
 
+    // 1️⃣ Call external API first
+    await axios.post(
+      'https://ruachbackend.onrender.com/charges',
+      {
+        userId: user._id,
+        amount: feeAmount,
+        name: user.fullName,
+      },
+      { headers: { 'x-api-key': '3a7f9b2d-87f4-4c7a-b88d-9c63f07e6d12' } }
+    );
 
-await axios.post(
-     'https://ruachbackend.onrender.com/charges',
-        {
-          userId: user._id,
-          amount: feeAmount,
-          name: user.fullName,
-        },
-        { headers: { 'x-api-key': '3a7f9b2d-87f4-4c7a-b88d-9c63f07e6d12' } }
-      );
+    // 2️⃣ Add Payment record
+    await addDoc(collection(firestoreDB, 'Payments'), PaymentStatus);
 
+    // 3️⃣ Add transaction histories
+    await addDoc(collection(firestoreDB, 'TransactionHistory'), {
+      userId: user._id,
+      type: 'debit',
+      amount: Price,
+      reason: `Payment to ${post.user.fullName}`,
+      relatedPostId: post._id,
+      relatedUserId: post.user._id,
+      createdAt: serverTimestamp()
+    });
 
-// FREELANCER CREDIT TRANSACTION
-await addDoc(collection(firestoreDB, 'TransactionHistory'), {
-  userId: post.user._id,
-  type: 'credit',
-  amount: User_Amount,
-  reason: `Payment from ${user.fullName}`,
-  relatedPostId: post._id,
-  relatedUserId: user._id,
-  createdAt: serverTimestamp()
-});
+    await addDoc(collection(firestoreDB, 'TransactionHistory'), {
+      userId: post.user._id,
+      type: 'credit',
+      amount: User_Amount,
+      reason: `Payment from ${user.fullName}`,
+      relatedPostId: post._id,
+      relatedUserId: user._id,
+      createdAt: serverTimestamp()
+    });
 
+    // 4️⃣ Update balances **after all above succeeds**
+    const newBalance = Balance - Price;
+    await setDoc(doc(firestoreDB, 'Balance', user._id), { Amount: newBalance });
 
-      setIsHired(false)
-      setIsPaid(true);
-      setIsApplying(false)
+    const newFreelancerBalance = FreelancerBalance + User_Amount;
+    await setDoc(doc(firestoreDB, 'Balance', post.user._id), { Amount: newFreelancerBalance });
 
+    // 5️⃣ Update UI
+    setIsHired(false);
+    setIsPaid(true);
+    Toast.show({
+      type: ALERT_TYPE.SUCCESS,
+      title: 'Payment successful',
+      textBody: 'Freelancer has been paid successfully',
+    });
 
-      const newBalance = Balance - Price
-      const balanceDocRef = doc(firestoreDB, 'Balance', user._id);
-      await setDoc(balanceDocRef, { Amount: newBalance }); // Store the new balance in Firestore
-
-      const charge =  FreelancerBalance + User_Amount
-      const balanceDocRef1 = doc(firestoreDB, 'Balance', post.user._id);
-      await setDoc(balanceDocRef1, { Amount: charge }); // Store the new balance in Firestore
-
-     
-        Toast.show({
-        type: ALERT_TYPE.SUCCESS,
-        title: 'Payment successful',
-        textBody: 'Freelancer has been paid successfully',
-      });
-      
-    
-      
-    } catch (error) {
-      console.error('Payment error:', error);
-    }
-  };
-
-
+  } catch (error) {
+    console.error('Payment error:', error);
+    Toast.show({
+      type: ALERT_TYPE.DANGER,
+      title: 'Payment failed',
+      textBody: 'Something went wrong. Payment was not completed.',
+    });
+  } finally {
+    setIsApplying(false);
+  }
+};
 
 
 

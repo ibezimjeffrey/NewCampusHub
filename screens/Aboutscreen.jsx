@@ -340,7 +340,7 @@ const bankOptions = [
         const imageUrl = responseData.secure_url;
         setSelectedImages((prevImages) => [...prevImages, imageUrl]);
         Toast.show({
-                                type: ALERT_TYPE.WARNING,
+                                type: ALERT_TYPE.SUCCESS,
                                 title: 'Upload Successful',
                                 textBody:' Image uploaded successfully!',
                                 titleStyle: {

@@ -37,21 +37,18 @@ const scaleFont = (baseFont) => {
 
 const Messagescreen = () => {
   const navigation = useNavigation();
-
   const user = useSelector((state) => state.user.user);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [Chats, setChats] = useState(null);
+  const [Chats, setChats] = useState([]);
   const [unreadMap, setUnreadMap] = useState({});
+  const [latestMessages, setLatestMessages] = useState({}); // track latest per room
 
-  const moveToAddChatScreen = () => {
-    navigation.navigate("AddTochatscreen");
-  };
-
+  // Load chats
   useLayoutEffect(() => {
     const chatQuery = query(
       collection(firestoreDB, "chats"),
-      orderBy("_id", "desc"),
+      orderBy("_id", "desc")
     );
 
     const unsubscribe = onSnapshot(chatQuery, (querySnapshot) => {
@@ -59,90 +56,74 @@ const Messagescreen = () => {
         .map((doc) => doc.data())
         .filter((room) => room.index === user._id);
       setChats(chatRooms);
-      console.log(
-        "Chats loaded:",
-        chatRooms.map((r) => ({
-          _id: r._id,
-          idRoom: r.idRoom,
-          index: r.index,
-        })),
-      );
       setIsLoading(false);
     });
 
     return unsubscribe;
   }, [user._id]);
 
+  // Listen to messages to track latest per room & unread
   useEffect(() => {
-    // listen to recent messages and compute a latest-message map per room
     const msgQuery = query(
       collection(firestoreDB, "messages"),
-      orderBy("timeStamp", "desc"),
+      orderBy("timeStamp", "desc")
     );
+
     const unsubscribeMsgs = onSnapshot(msgQuery, (querySnapshot) => {
       const latestByRoom = {};
+
       querySnapshot.docs.forEach((d) => {
         const m = d.data();
-        const idRoom = m.idRoom;
-        // since ordered desc, first occurrence is the latest
-        if (!latestByRoom[idRoom]) latestByRoom[idRoom] = m;
+        const roomId = m.idRoom;
+        if (!latestByRoom[roomId]) latestByRoom[roomId] = m; // first = latest
       });
 
+      // Update latest messages state
+      setLatestMessages(latestByRoom);
+
+      // Compute unread map
       const map = {};
       Object.keys(latestByRoom).forEach((roomId) => {
         const m = latestByRoom[roomId];
-        // try to find corresponding chat doc to see when this user last read it
         const chat = (Chats || []).find(
-          (r) => r.idRoom === roomId || r._id === roomId,
+          (r) => r.idRoom === roomId || r._id === roomId
         );
         const lastRead = chat?.lastRead?.[user._id];
         const lastReadMs = lastRead ? lastRead.seconds * 1000 : null;
-        const latestMs = m?.timeStamp?.seconds
-          ? m.timeStamp.seconds * 1000
-          : null;
+        const latestMs = m?.timeStamp?.seconds ? m.timeStamp.seconds * 1000 : null;
 
         let unread = false;
-        if (!latestMs) {
-          unread = false;
-        } else if (!lastReadMs) {
-          // no record of reading: show unread only if latest message was sent by someone else
-          unread = !!(m?.user && m.user._id !== user._id);
-        } else {
-          // unread if message is newer than lastRead and was sent by someone else
-          unread =
-            latestMs > lastReadMs && !!(m?.user && m.user._id !== user._id);
-        }
+        if (!latestMs) unread = false;
+        else if (!lastReadMs) unread = !!(m?.user && m.user._id !== user._id);
+        else unread = latestMs > lastReadMs && !!(m?.user && m.user._id !== user._id);
 
         map[roomId] = unread;
       });
+
       setUnreadMap(map);
-      console.log("Unread map updated:", map);
     });
 
     return () => unsubscribeMsgs();
-  }, [user._id, Chats]);
+  }, [user._id, Chats]); // ✅ keep Chats here only to get lastRead info
 
+  // Mark room read
   const markRoomRead = async (room) => {
-    try {
-      if (!room?._id) return;
-      const chatRef = doc(firestoreDB, "chats", room._id);
-      const nowSeconds = Math.floor(Date.now() / 1000);
-      // write a client-side timestamp object so UI can immediately read `seconds`
-      await setDoc(
-        chatRef,
-        { lastRead: { [user._id]: { seconds: nowSeconds, nanoseconds: 0 } } },
-        { merge: true },
-      );
-    } catch (err) {
-      console.error("markRoomRead error", err);
-    }
+    if (!room?._id) return;
+    const chatRef = doc(firestoreDB, "chats", room._id);
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    await setDoc(
+      chatRef,
+      { lastRead: { [user._id]: { seconds: nowSeconds, nanoseconds: 0 } } },
+      { merge: true }
+    );
   };
 
+  // Message card
   const MessageCard = ({ room }) => {
-    const currentUser = useSelector((state) => state.user.user);
+    const isCurrentUserRoomCreator = user._id === room.index;
+    const isNotCurrentUserJobPoster = user._id === room.index1;
 
-    const isCurrentUserRoomCreator = currentUser._id === room.index;
-    const isNotCurrentUserJobPoster = currentUser._id === room.index1;
+    const roomKeyLocal = room.idRoom || room._id;
 
     return (
       <TouchableOpacity
@@ -158,7 +139,7 @@ const Messagescreen = () => {
           paddingHorizontal: 20,
           backgroundColor: "#FFFFFF",
           borderWidth: 1,
-          borderColor: "#268290", // primaryButton
+          borderColor: "#268290",
           borderRadius: 16,
           marginTop: 10,
           shadowColor: "#000",
@@ -168,8 +149,6 @@ const Messagescreen = () => {
           elevation: 3,
         }}
       >
-        {/* Profile Picture */}
-
         <View
           style={{
             width: 60,
@@ -183,39 +162,28 @@ const Messagescreen = () => {
         >
           <Image
             source={{
-              uri: isCurrentUserRoomCreator
-                ? room.user.profilePic
-                : room.profilePic,
+              uri: isCurrentUserRoomCreator ? room.user.profilePic : room.profilePic,
             }}
             resizeMode="contain"
             style={{ width: 50, height: 50, borderRadius: 25 }}
           />
-          {(() => {
-            const roomKeyLocal = room.idRoom || room._id;
-            console.log("MessageCard render", {
-              roomKey: roomKeyLocal,
-              unread: !!unreadMap[roomKeyLocal],
-            });
-            return unreadMap[roomKeyLocal] ? (
-              <View
-                style={{
-                  position: "absolute",
-                  right: 6,
-                  top: 6,
-                  width: 12,
-                  height: 12,
-                  borderRadius: 6,
-                  backgroundColor: "#FF3B30",
-                  borderWidth: 2,
-                  borderColor: "#FFF",
-                }}
-              />
-            ) : null;
-          })()}
+          {unreadMap[roomKeyLocal] && (
+            <View
+              style={{
+                position: "absolute",
+                right: 6,
+                top: 6,
+                width: 12,
+                height: 12,
+                borderRadius: 6,
+                backgroundColor: "#FF3B30",
+                borderWidth: 2,
+                borderColor: "#FFF",
+              }}
+            />
+          )}
         </View>
-        {/* Info */}
         <View style={{ flex: 1, marginLeft: 20 }}>
-          {/* Job Name */}
           <View style={{ borderBottomWidth: 2, borderColor: "#D3D3D3" }}>
             <AppText
               style={{
@@ -224,13 +192,12 @@ const Messagescreen = () => {
                 fontWeight: !isNotCurrentUserJobPoster ? "bold" : "normal",
                 textTransform: "capitalize",
               }}
-              numberOfLines={1} // prevent overflow
+              numberOfLines={1}
             >
               {isCurrentUserRoomCreator ? room.jobName : ""}
             </AppText>
           </View>
 
-          {/* User Name + Role */}
           <View
             style={{
               flexDirection: "row",
@@ -246,11 +213,11 @@ const Messagescreen = () => {
                 color: "#666",
                 textTransform: "capitalize",
                 flexShrink: 1,
-                flex: 1, // take remaining space
+                flex: 1,
               }}
               numberOfLines={1}
-              adjustsFontSizeToFit={true} // SHRINK font to fit
-              minimumFontScale={0.7} // shrink up to 70% of original size
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
             >
               {isCurrentUserRoomCreator ? room.user.fullName : "Babby"}
             </AppText>
@@ -262,11 +229,11 @@ const Messagescreen = () => {
                 textTransform: "capitalize",
                 marginLeft: 8,
                 flexShrink: 1,
-                flex: 0, // only take as much space as needed
+                flex: 0,
               }}
               numberOfLines={1}
-              adjustsFontSizeToFit={true} // SHRINK font if too long
-              minimumFontScale={0.7} // shrink up to 70% of original size
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
             >
               {!isNotCurrentUserJobPoster ? "Freelancer" : "Client"}
             </AppText>
@@ -279,11 +246,8 @@ const Messagescreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: "#FFF" }}>
       <SafeAreaView edges={["top"]}>
-        <ScrollView
-          className="h-full"
-          style={{ paddingHorizontal: 10, paddingTop: 10 }}
-        >
-          <View className="h-full">
+        <ScrollView style={{ paddingHorizontal: 10, paddingTop: 10 }}>
+          <View>
             <View
               style={{
                 flexDirection: "row",
@@ -292,33 +256,29 @@ const Messagescreen = () => {
                 paddingHorizontal: 10,
               }}
             >
-              <AppText style={{ fontSize: 20, color: "#268290" }}>
-                Messages
-              </AppText>
+              <AppText style={{ fontSize: 20, color: "#268290" }}>Messages</AppText>
             </View>
+
             {isLoading ? (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
+              <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                 <ActivityIndicator size="large" color="#268290" />
+              </View>
+            ) : Chats.length === 0 ? (
+              <View className="items-center">
+                <AppText>No messages</AppText>
               </View>
             ) : (
               <>
-                {Chats && Chats.length > 0 ? (
-                  <>
-                    {Chats.map((room, index) => (
-                      <MessageCard key={index} room={room} />
-                    ))}
-                  </>
-                ) : (
-                  <View className="items-center">
-                    <AppText>No messages</AppText>
-                  </View>
-                )}
+                {/* SORT HERE ON RENDER */}
+                {[...Chats]
+                  .sort((a, b) => {
+                    const aTime = latestMessages[a.idRoom || a._id]?.timeStamp?.seconds || 0;
+                    const bTime = latestMessages[b.idRoom || b._id]?.timeStamp?.seconds || 0;
+                    return bTime - aTime; // newest first
+                  })
+                  .map((room) => (
+                    <MessageCard key={room._id} room={room} />
+                  ))}
               </>
             )}
           </View>
@@ -327,17 +287,4 @@ const Messagescreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingVertical: 10,
-  },
-  logo: {
-    width: 1000,
-    height: 50,
-  },
-});
-
 export default Messagescreen;

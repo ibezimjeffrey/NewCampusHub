@@ -56,8 +56,8 @@ React.useEffect(() => {
 
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-    <View className="flex-1 bg-gray-50 justify-center items-center px-6">
+    <SafeAreaView className="flex-1 bg-white">
+    <View className="flex-1 bg-white justify-center items-center px-6">
 
       {/* Logo + Title */}
       <Animated.View
@@ -109,7 +109,73 @@ React.useEffect(() => {
              Start your journey
           </AppText>
         </TouchableOpacity>
+<View
+  style={{
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    alignItems: "center",
+    backgroundColor: "#ffffff",
+  }}
+>
 
+  {/* App Name */}
+  <Text
+    style={{
+      fontSize: 18,
+      fontWeight: "700",
+      marginBottom: 6,
+      letterSpacing: 0.5,
+    }}
+  >
+    S.T.E.P
+  </Text>
+
+  {/* Tagline */}
+  <Text
+    style={{
+      fontSize: 13,
+      color: "#777",
+      marginBottom: 16,
+      textAlign: "center",
+    }}
+  >
+    Simple. Fast. Reliable.
+  </Text>
+
+  {/* Links */}
+  <View
+    style={{
+      flexDirection: "row",
+      gap: 18,
+      marginBottom: 16,
+    }}
+  >
+   
+  </View>
+
+  {/* Divider */}
+  <View
+    style={{
+      height: 1,
+      width: "60%",
+      backgroundColor: "#eee",
+      marginBottom: 14,
+    }}
+  />
+
+  {/* Copyright */}
+  <Text
+    style={{
+      fontSize: 12,
+      color: "#999",
+    }}
+  >
+    © 2026 S.T.E.P. Technologies. All rights reserved.
+  </Text>
+
+</View>
     
       </Animated.View>
     </View>

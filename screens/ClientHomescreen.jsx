@@ -223,7 +223,7 @@ const msgQuery = query(
   ))
 
               ) : (
-                <View className=" flex flex-column justify-center align-middle items-center">
+                <View className=" flex flex-column justify-center mt-9 align-middle items-center">
                 <AppText>No jobs available</AppText>
                 </View>
               )}

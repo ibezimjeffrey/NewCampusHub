@@ -205,6 +205,11 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
             </View>
           </View>
         </View>
+        <View className="mx-5 mt-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl">
+  <Text className="text-xs text-amber-700 text-center font-medium leading-5">
+    A service fee of 7.5% will be charged on this job.
+  </Text>
+</View>
 
         {/* Action Button */}
         {!isUserPosted ? (
@@ -262,6 +267,8 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
             )}
           </TouchableOpacity>
         )}
+
+        
       </ScrollView>
     </SafeAreaView>
   );

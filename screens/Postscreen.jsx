@@ -66,7 +66,6 @@ const jobOptions = [
   { label: "Hairstylist", value: "Hairstylist" },
   { label: "Delivery", value: "Delivery" },
   { label: "Graphic Designer", value: "Graphic Designer" },
-  { label: "Essay Editing", value: "Essay Editing" },
   { label: "Fitness Training", value: "Fitness Training" },
   { label: "Errand Running", value: "Errand Running" },
   { label: "Photography", value: "Photography" },
@@ -110,6 +109,8 @@ const locationOptions = [
       };
       fetchBalance();
     }, [user._id]);
+
+    
 
 
   useEffect(() => {

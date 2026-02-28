@@ -423,7 +423,11 @@ const Settings = () => {
               <AppText className="text-center text-gray-500 mt-6">
                 Funds will be deposited from your bank account
               </AppText>
-
+<View className="mx-5 mt-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl">
+  <Text className="text-xs text-amber-700 text-center font-medium leading-5">
+    A service fee of ₦50 will be charged on this deposit.
+  </Text>
+</View>
               {/* Buttons */}
               <TouchableOpacity
                 onPress={() => {
@@ -457,7 +461,7 @@ const Settings = () => {
       {start && (
         <Paystack
           paystackKey="pk_test_bb056f19149cb6867f38cb9019f7f94defd87bc0"
-          amount={number}
+          amount={number + 50}
           billingEmail={user.email}
           onCancel={() => {
             setIsAdding(true);
