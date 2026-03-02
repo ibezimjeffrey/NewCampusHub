@@ -1,4 +1,4 @@
-import { View, Text, Platform, TextInput, ActivityIndicator } from 'react-native'
+import { View, Text, Platform, TextInput, ActivityIndicator, Alert } from 'react-native'
 import CustomPicker from '@/components/CustomPicker'
 import React, { useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native'
@@ -16,6 +16,7 @@ import { Dimensions } from 'react-native';
 const { width } = Dimensions.get('window');
 import { serverTimestamp } from 'firebase/firestore';
 import AppText from '@/components/AppText'
+import axios from 'axios'
 
 
 const scaleFont = (baseFont) => {
@@ -33,6 +34,9 @@ const Postscreen = () => {
   const [value1, setvalue1] = useState(""); 
   const [otherJob, setotherJob] = useState("");
   const [statevalue1, setstatevalue1] = useState("")
+  const [Allowed, setAllowed] = useState("")
+  const [Label, setLabel] = useState("")
+  const [Reason, setReason] = useState("")
 
   const [Balance, setBalance] = useState(0)
   
@@ -175,6 +179,42 @@ const locationOptions = [
       setIsApplying(false);
       return;
     }
+
+
+
+
+      const response = await axios.post(
+  'http://192.168.100.8:3000/AI',
+  {
+    text: value1
+  },
+  {
+    headers: {
+      'x-api-key': '3a7f9b2d-87f4-4c7a-b88d-9c63f07e6d12'
+    }
+  }
+);
+
+console.log(response.data.allowed);
+    setAllowed(response.data.allowed);  
+    setLabel(response.data.label);
+    setReason(response.data.reason);
+
+    if (response.data.allowed === false) {
+
+    Toast.show({
+                type: ALERT_TYPE.WARNING,
+                title: Label,
+                textBody:Reason,
+              });
+      setIsApplying(false);
+      return;
+            }
+
+
+
+
+
 
     if (COSavailable == false || Aboutavailable == false ) {
        Toast.show({
