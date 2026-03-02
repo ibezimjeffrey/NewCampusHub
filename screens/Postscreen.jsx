@@ -60,16 +60,16 @@ const Time = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 const DisplayTime = `${day}-${month}-${year}`;
 const jobOptions = [
   { label: "Select job", value: "" },
-  { label: "Makeup Artist", value: "Makeup Artist" },
-  { label: "Catering services", value: "Catering services" },
+  { label: "Makeup Services", value: "Makeup Services" },
+  { label: "Cooking services", value: "Cooking services" },
   { label: "Cleaning services", value: "Cleaning services" },
-  { label: "Personal Shopper", value: "Personal Shopper" },
-  { label: "Tutoring", value: "Tutoring" },
-  { label: "Nail Tech", value: "Nail Tech" },
-  { label: "Writer", value: "Writer" },
-  { label: "Hairstylist", value: "Hairstylist" },
+  { label: "Personal Shopping", value: "Personal Shopping" },
+  { label: "Academic Tutoring", value: "Academic Tutoring" },
+  { label: "Nail Services ", value: "Nail Services " },
+  { label: "Content Writing", value: "Content Writing" },
+  { label: "Hair styling", value: "Hair styling" },
   { label: "Delivery", value: "Delivery" },
-  { label: "Graphic Designer", value: "Graphic Designer" },
+  { label: "Graphic Design", value: "Graphic Designer" },
   { label: "Fitness Training", value: "Fitness Training" },
   { label: "Errand Running", value: "Errand Running" },
   { label: "Photography", value: "Photography" },
@@ -184,9 +184,11 @@ const locationOptions = [
 
 
       const response = await axios.post(
-  'http://192.168.100.8:3000/AI',
+   'https://ruachbackend.onrender.com/AI',
   {
+     title: value,
     text: value1
+   
   },
   {
     headers: {
