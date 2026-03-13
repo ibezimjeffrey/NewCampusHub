@@ -70,7 +70,8 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
       profilePic: post.User.profilePic,
       idRoom: room_id,
       index1: user._id,
-      price:post.Budget
+      price:post.Budget,
+      Job:post
     };
 
     try {
@@ -146,6 +147,7 @@ const [isProfileComplete, setIsProfileComplete] = useState(false);
       idRoom: room_id,
       index1: user._id,
       price:post.Budget,
+      Job:post
     };
 
     try {

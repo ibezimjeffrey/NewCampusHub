@@ -319,7 +319,7 @@ const Chatscreen = ({ route }) => {
       await addDoc(collection(firestoreDB, 'Status'), hireStatus);
       // remove the original job posting from the collection using its
       // Firestore document ID (post._id)
-      await removePost(post._id);
+      await removePost(post.Job.id);
       setIsHired(true);
       setIsApplying(false)
       

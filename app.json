@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "NewCampusHub",
+    "name": "STEP",
     "slug": "NewCampusHub",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "newcampushub",
+    "scheme": "step",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -17,12 +17,16 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jeffibezim.STEP",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
-      "package": "com.jeffibezim.NewCampusHub",
+      "package": "com.jeffibezim.STEP",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo.png",
+        "foregroundImage": "./assets/images/newlogo.png",
         "backgroundColor": "#ffffff"
       }
     },

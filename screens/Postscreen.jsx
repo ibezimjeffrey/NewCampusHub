@@ -99,22 +99,27 @@ const locationOptions = [
 
   const [COSavailable, setCOSavailable] = useState(false)
   const [Aboutavailable, setAboutavailable] = useState(false)
+useEffect(() => {
+  if (!user?._id) return;
 
-  useEffect(() => {
-      const fetchBalance = async () => {
-        const ref = doc(firestoreDB, 'Balance', user._id);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          setBalance(parseFloat(snap.data().Amount));
-        } else {
-          await setDoc(ref, { Amount: 0 });
-          setBalance(0);
-        }
-      };
-      fetchBalance();
-    }, [user._id]);
+  const ref = doc(firestoreDB, 'Balance', user._id);
 
-    
+  // Real-time listener
+  const unsubscribe = onSnapshot(ref, (snap) => {
+    if (snap.exists()) {
+      setBalance(parseFloat(snap.data().Amount));
+    } else {
+      // Initialize if missing
+      setDoc(ref, { Amount: 0 });
+      setBalance(0);
+    }
+  }, (error) => {
+    console.error('Error fetching balance:', error);
+  });
+
+  // Cleanup listener on unmount
+  return () => unsubscribe();
+}, [user._id]);
 
 
   useEffect(() => {
@@ -179,10 +184,7 @@ const locationOptions = [
       setIsApplying(false);
       return;
     }
-
-
-
-
+    
       const response = await axios.post(
    'https://ruachbackend.onrender.com/AI',
   {
@@ -198,16 +200,18 @@ const locationOptions = [
 );
 
 console.log(response.data.allowed);
-    setAllowed(response.data.allowed);  
-    setLabel(response.data.label);
-    setReason(response.data.reason);
+    
+const label = response.data.label;
+const reason = response.data.reason;
 
-    if (response.data.allowed === false) {
+
+    if (label !== "JOB_OK") {
 
     Toast.show({
                 type: ALERT_TYPE.WARNING,
-                title: Label,
-                textBody:Reason,
+                title: label,
+                
+
               });
       setIsApplying(false);
       return;

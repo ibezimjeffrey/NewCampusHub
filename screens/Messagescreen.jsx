@@ -56,6 +56,7 @@ const Messagescreen = () => {
         .map((doc) => doc.data())
         .filter((room) => room.index === user._id);
       setChats(chatRooms);
+      console.log(chatRooms);
       setIsLoading(false);
     });
 
